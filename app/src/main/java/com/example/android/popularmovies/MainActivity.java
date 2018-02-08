@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,11 +22,13 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieGridAdapter.OnItemClickListener {
     private RecyclerView mRecyclerView;
     private MovieGridAdapter mAdapter;
 
-   public final static String API_KEY = "   ";
+    private List<Movie> mMovieList;
+
+   public final static String API_KEY = "f406f3d6fecd4c4fcb9919780dc3954e";
 
 
     @Override
@@ -33,12 +36,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mMovieList = new ArrayList<>();
+
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_movie_posters);
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
         mAdapter = new MovieGridAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener(MainActivity.this);
         List<Movie> movies = new ArrayList<>();
 
         for (int i=0; i< 25; i++) {
@@ -62,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(retrofit2.Call<Movie.MovieResult> call, Response<Movie.MovieResult> response) {
                 Movie.MovieResult result = response.body();
                 mAdapter.setmMovieList(result.getResults());
+                mMovieList = result.getResults();
 
 
 //                Log.d("LOG: Page ",result.getPage());
@@ -69,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
 //                Log.d("LOG: Total Pages  ",result.getTotal_pages());
 //                Log.d(" LOG:test ", listString);
 //                Log.d(" LOG:Results ", String.valueOf(result.getResults()));
-                    Toast.makeText(MainActivity.this, "Success", Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -79,21 +85,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
-
-
-
-
     }
 
-    // ViewHolder
-    public static class MovieGridViewHolder extends RecyclerView.ViewHolder {
-
-        public ImageView imageView;
-        public MovieGridViewHolder(View itemView){
-            super(itemView);
-            imageView = (ImageView) itemView.findViewById(R.id.movie_image);
-        }
+    @Override
+    public void onItemClick(int position) {
+//        Movie movie = mMovieList.get(getAdapterPosition());
+        Movie movie = mMovieList.get(position);
+        Intent intent = new Intent(this, MovieDetailActivity.class);
+//            intent.putExtra("posterImage", movie.getPoster());
+        intent.putExtra("backdrop", movie.getBackdrop());
+        intent.putExtra("title", movie.getTitle());
+        intent.putExtra("description", movie.getDescription());
+        intent.putExtra("userRating", movie.getUserRating());
+        intent.putExtra("releaseDate", movie.getReleaseDate());
+        startActivity(intent);
     }
 }

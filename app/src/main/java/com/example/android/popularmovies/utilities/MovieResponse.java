@@ -1,18 +1,9 @@
 package com.example.android.popularmovies.utilities;
 
 import com.example.android.popularmovies.Movie;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.annotations.SerializedName;
 
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by ben.mason on 01/02/2018.
- */
 
 public class MovieResponse {
 

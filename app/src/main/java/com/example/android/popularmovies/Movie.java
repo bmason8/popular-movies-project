@@ -2,15 +2,8 @@ package com.example.android.popularmovies;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by ben.mason on 01/02/2018.
- */
 
 public class Movie {
 

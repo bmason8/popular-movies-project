@@ -6,19 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Created by ben.mason on 02/02/2018.
- */
 
 public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieGridAdapterViewHolder> {
     private Context mContext;
@@ -66,7 +60,7 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
 //            int adapterPosition = getAdapterPosition();
             Movie movie = mMovieList.get(getAdapterPosition());
             final Intent intent = new Intent(mContext, MovieDetailActivity.class);
-//            intent.putExtra("posterImage", movie.getPoster());
+            intent.putExtra("posterImage", movie.getPoster());
             intent.putExtra("backdrop", movie.getBackdrop());
             intent.putExtra("title", movie.getTitle());
             intent.putExtra("description", movie.getDescription());

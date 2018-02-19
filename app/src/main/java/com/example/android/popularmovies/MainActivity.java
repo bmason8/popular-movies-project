@@ -24,7 +24,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements MovieGridAdapter.OnItemClickListener {
     private RecyclerView mRecyclerView;
     private MovieGridAdapter mAdapter;
-    String baseBackDropUrl = "https://image.tmdb.org/t/p/w185";
+    String baseBackDropUrl = "https://image.tmdb.org/t/p/w500";
 
     private List<Movie> mMovieList;
 
@@ -100,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapter.
         intent.putExtra("userRating", movie.getUserRating());
         intent.putExtra("releaseDate", movie.getReleaseDate());
         startActivity(intent);
+        Log.d("backdropPath: ", baseBackDropUrl + movie.getBackdrop());
+        Log.d("posterPath: ", movie.getPoster());
     }
 
     @Override

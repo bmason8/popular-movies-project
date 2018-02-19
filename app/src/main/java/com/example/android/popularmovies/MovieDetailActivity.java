@@ -3,7 +3,9 @@ package com.example.android.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -11,9 +13,12 @@ import com.squareup.picasso.Picasso;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
+
     private ImageView mMoviePosterImage;
     private ImageView mMovieBackdropImage;
-    private TextView tvMovieTitle, tvMovieOverview, tvMovieUserRating, tvMovieReleaseDate;
+    private RatingBar mUserRating;
+    private TextView tvMovieTitle, tvMovieOverview, tvMovieReleaseDate;
+    private String sMovieUserRating;
 
 
     @Override
@@ -23,9 +28,10 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         mMoviePosterImage = findViewById(R.id.movie_poster_image);
         mMovieBackdropImage = findViewById(R.id.movie_backdrop_image);
+        mUserRating = findViewById(R.id.movie_user_rating);
         tvMovieTitle = findViewById(R.id.movie_title);
         tvMovieOverview = findViewById(R.id.movie_overview);
-        tvMovieUserRating = findViewById(R.id.movie_user_rating);
+//        tvMovieUserRating = findViewById(R.id.movie_user_rating);
         tvMovieReleaseDate = findViewById(R.id.movie_release_date);
 
 
@@ -33,8 +39,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         String backdropImageUrl = intent.getStringExtra("backdrop");
         String moviePosterImageUrl = intent.getStringExtra("posterImage");
-
-//        mMoviePosterImage.setImageResource(getIntent().getIntExtra("posterImage", 0));
 
         Picasso.with(this)
                 .load(backdropImageUrl)
@@ -48,8 +52,18 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         tvMovieTitle.setText(intent.getStringExtra("title"));
         tvMovieOverview.setText(intent.getStringExtra("description"));
-        tvMovieUserRating.setText(intent.getStringExtra("userRating"));
-        tvMovieReleaseDate.setText(intent.getStringExtra("releaseDate"));
+//        tvMovieUserRating.setText("Rating: " + intent.getStringExtra("userRating"));
+        // For converting a string into a rating...
+        // https://stackoverflow.com/questions/16529640/how-to-set-value-to-rating-bar-with-string
+        // Aso I wanted a RatingBar but having 10 stars made it hard to tell quickly what the
+        // rating was so I divided the score by 2 and made it out of 5 stars
+        sMovieUserRating = intent.getStringExtra("userRating");
+        float rating = Float.parseFloat(sMovieUserRating);
+        Log.d("userRating: ", String.valueOf(rating));
+        rating = (rating / 2);
+        mUserRating.setRating(rating);
+        Log.d("userRating2: ", String.valueOf(rating));
+        tvMovieReleaseDate.setText("Released: " + intent.getStringExtra("releaseDate"));
 
     }
 }

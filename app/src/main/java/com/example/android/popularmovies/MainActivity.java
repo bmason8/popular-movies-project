@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.android.popularmovies.Movie.MovieResult;
 import com.example.android.popularmovies.utilities.ApiInterface;
+import com.example.android.popularmovies.MovieGridAdapter.MovieGridAdapterOnClickHandler;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity implements MovieGridAdapter.OnItemClickListener {
+public class MainActivity extends AppCompatActivity implements MovieGridAdapterOnClickHandler {
     private RecyclerView mRecyclerView;
     private MovieGridAdapter mAdapter;
     String baseBackDropUrl = "https://image.tmdb.org/t/p/w500";
@@ -50,19 +51,20 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapter.
     }
 
     private void fetchMovieList(String getParameter) {
+        // set a LayoutManager on the RecyclerView
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-
+//        mRecyclerView.setHasFixedSize(true);
+        // create a new MovieGridAdapter and give it context
         mAdapter = new MovieGridAdapter(this);
+        // set the new MovieGridAdapter on the RecyclerView
         mRecyclerView.setAdapter(mAdapter);
-        mAdapter.setOnItemClickListener(MainActivity.this);
+        // set the onClickListener from MovieDetailActivity on the adapter
+        mAdapter.MovieGridAdapterClickListener(MainActivity.this);
         List<Movie> movies = new ArrayList<>();
 
-        for (int i=0; i< 25; i++) {
-            movies.add(new Movie());
-        }
         mAdapter.setmMovieList(movies);
 
-// Retrofit
+        // Retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ApiInterface.MOVIE_DB_BASE_MOVIE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -90,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapter.
 
     @Override
     public void onItemClick(int position) {
-//        Movie movie = mMovieList.get(getAdapterPosition());
         Movie movie = mMovieList.get(position);
         Intent intent = new Intent(this, MovieDetailActivity.class);
         intent.putExtra("posterImage", movie.getPoster());
@@ -100,8 +101,6 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapter.
         intent.putExtra("userRating", movie.getUserRating());
         intent.putExtra("releaseDate", movie.getReleaseDate());
         startActivity(intent);
-        Log.d("backdropPath: ", baseBackDropUrl + movie.getBackdrop());
-        Log.d("posterPath: ", movie.getPoster());
     }
 
     @Override
@@ -115,13 +114,13 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapter.
         switch (item.getItemId()) {
 
             case R.id.top_rated:
-                Toast.makeText(this, "Top Rated", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.top_rated, Toast.LENGTH_SHORT).show();
                 getParameter = TOP_RATED;
                 fetchMovieList(getParameter);
                 return true;
 
             case R.id.most_popular:
-                Toast.makeText(this, "Most Popular", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.most_popular, Toast.LENGTH_SHORT).show();
                 getParameter = MOST_POPULAR;
                 fetchMovieList(getParameter);
                 return true;

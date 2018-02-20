@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+// Helpful Resources...
+// http://mateoj.com/2015/10/06/creating-movies-app-retrofit-picasso-android/
+// http://mateoj.com/2015/10/07/creating-movies-app-retrofit-picass-android-part2/
 
 public class Movie {
 

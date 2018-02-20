@@ -7,6 +7,8 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+// Helpful Resources...
+// https://www.androidhive.info/2016/05/android-working-with-retrofit-http-library/
 
 public interface ApiInterface {
 

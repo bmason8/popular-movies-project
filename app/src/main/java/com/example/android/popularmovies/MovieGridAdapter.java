@@ -3,9 +3,11 @@ package com.example.android.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -14,17 +16,24 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+// Helpful Resources...
+// https://www.androidhive.info/2016/05/android-working-with-retrofit-http-library/
+// Also used the lesson from the course on this topic: S03.02 RecyclerViewClickHandling
+
 public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieGridAdapterViewHolder> {
     private Context mContext;
     private List<Movie> mMovieList;
-    private OnItemClickListener mListener;
+    private MovieGridAdapterOnClickHandler mListener;
 
-    public interface OnItemClickListener {
+
+
+    public interface MovieGridAdapterOnClickHandler {
         void onItemClick(int position);
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        mListener = listener;
+
+    public void MovieGridAdapterClickListener(MovieGridAdapterOnClickHandler clickHandler) {
+        mListener = clickHandler;
     }
 
 
@@ -34,41 +43,23 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
     }
 
 
-    public class MovieGridAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class MovieGridAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
         ImageView moviePosterImageView;
 
         public MovieGridAdapterViewHolder(View view) {
             super(view);
             moviePosterImageView = view.findViewById(R.id.movie_poster);
             // catch the click on the view in our adapter and pass it over the interface to our activity
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(mListener != null) {
-                        int position = getAdapterPosition();
-                        // make sure the position is still valid
-                        if (position != RecyclerView.NO_POSITION) {
-                            mListener.onItemClick(position);
-                        }
-                    }
-                }
-            });
+            view.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
-//            int adapterPosition = getAdapterPosition();
-            Movie movie = mMovieList.get(getAdapterPosition());
-            final Intent intent = new Intent(mContext, MovieDetailActivity.class);
-            intent.putExtra("posterImage", movie.getPoster());
-            intent.putExtra("backdrop", movie.getBackdrop());
-            intent.putExtra("title", movie.getTitle());
-            intent.putExtra("description", movie.getDescription());
-            intent.putExtra("userRating", movie.getUserRating());
-            intent.putExtra("releaseDate", movie.getReleaseDate());
-            Toast.makeText(mContext, movie.getBackdrop(), Toast.LENGTH_SHORT).show();
+                int position = getAdapterPosition();
+                mListener.onItemClick(position);
         }
     }
+
 
     @Override
     public MovieGridAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -93,10 +84,10 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
 
     @Override
     public int getItemCount() {
-        return (mMovieList == null) ? 0 : mMovieList.size();
+        return mMovieList.size();
     }
 
-    public void  setmMovieList(List<Movie>movieList) {
+    public void setmMovieList(List<Movie>movieList) {
         this.mMovieList.clear();
         this.mMovieList.addAll(movieList);
         notifyDataSetChanged();

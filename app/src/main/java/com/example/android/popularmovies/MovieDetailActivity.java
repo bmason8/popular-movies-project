@@ -59,11 +59,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         // rating was so I divided the score by 2 and made it out of 5 stars
         sMovieUserRating = intent.getStringExtra("userRating");
         float rating = Float.parseFloat(sMovieUserRating);
-        Log.d("userRating: ", String.valueOf(rating));
         rating = (rating / 2);
         mUserRating.setRating(rating);
         Log.d("userRating2: ", String.valueOf(rating));
         tvMovieReleaseDate.setText("Released: " + intent.getStringExtra("releaseDate"));
-
     }
 }

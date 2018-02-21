@@ -7,6 +7,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
    public static final String API_KEY = "f406f3d6fecd4c4fcb9919780dc3954e";
    private String getParameter;
    private static final String TOP_RATED = "top_rated";
-    private static final String MOST_POPULAR = "popular";
+   private static final String MOST_POPULAR = "popular";
 
 
     @Override
@@ -105,7 +106,8 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
         return true;
     }
 
@@ -113,13 +115,13 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
-            case R.id.top_rated:
+            case R.id.settings_top_rated:
                 Toast.makeText(this, R.string.top_rated, Toast.LENGTH_SHORT).show();
                 getParameter = TOP_RATED;
                 fetchMovieList(getParameter);
                 return true;
 
-            case R.id.most_popular:
+            case R.id.settings_most_popular:
                 Toast.makeText(this, R.string.most_popular, Toast.LENGTH_SHORT).show();
                 getParameter = MOST_POPULAR;
                 fetchMovieList(getParameter);

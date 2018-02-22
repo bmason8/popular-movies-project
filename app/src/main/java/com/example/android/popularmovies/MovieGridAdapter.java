@@ -1,15 +1,12 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -21,8 +18,8 @@ import java.util.List;
 // Also used the lesson from the course on this topic: S03.02 RecyclerViewClickHandling
 
 public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieGridAdapterViewHolder> {
-    private Context mContext;
-    private List<Movie> mMovieList;
+    private final Context mContext;
+    private final List<Movie> mMovieList;
     private MovieGridAdapterOnClickHandler mListener;
 
 
@@ -44,7 +41,7 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
 
 
     public class MovieGridAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
-        ImageView moviePosterImageView;
+        final ImageView moviePosterImageView;
 
         public MovieGridAdapterViewHolder(View view) {
             super(view);
@@ -66,9 +63,8 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
         final Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.movie_posters;
         LayoutInflater inflater = LayoutInflater.from(context);
-        boolean shouldAttachToParentImmediately = false;
 
-        final View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+        final View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
         return new MovieGridAdapterViewHolder(view);
     }
 

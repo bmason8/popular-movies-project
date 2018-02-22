@@ -12,8 +12,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.android.popularmovies.Movie.MovieResult;
-import com.example.android.popularmovies.utilities.ApiInterface;
 import com.example.android.popularmovies.MovieGridAdapter.MovieGridAdapterOnClickHandler;
+import com.example.android.popularmovies.utilities.ApiInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,17 +23,20 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+//Helpful Resources...
+//        https://www.journaldev.com/13639/retrofit-android-example-tutorial
+
 public class MainActivity extends AppCompatActivity implements MovieGridAdapterOnClickHandler {
     private RecyclerView mRecyclerView;
     private MovieGridAdapter mAdapter;
-    String baseBackDropUrl = "https://image.tmdb.org/t/p/w500";
+    final String baseBackDropUrl = "https://image.tmdb.org/t/p/w500";
 
     private List<Movie> mMovieList;
 
-   public static final String API_KEY = "f406f3d6fecd4c4fcb9919780dc3954e";
-   private String getParameter;
-   private static final String TOP_RATED = "top_rated";
-   private static final String MOST_POPULAR = "popular";
+    private static final String API_KEY = "f406f3d6fecd4c4fcb9919780dc3954e";
+    private String getParameter;
+    private static final String TOP_RATED = "top_rated";
+    private static final String MOST_POPULAR = "popular";
 
 
     @Override
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
             @Override
             public void onFailure(retrofit2.Call<Movie.MovieResult> call, Throwable t) {
                 Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                Log.d("Fail: ",t.getMessage());
+                Log.d("Fail: ", t.getMessage());
             }
         });
     }
@@ -116,19 +119,17 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         switch (item.getItemId()) {
 
             case R.id.settings_top_rated:
-                Toast.makeText(this, R.string.top_rated, Toast.LENGTH_SHORT).show();
                 getParameter = TOP_RATED;
                 fetchMovieList(getParameter);
                 return true;
 
             case R.id.settings_most_popular:
-                Toast.makeText(this, R.string.most_popular, Toast.LENGTH_SHORT).show();
                 getParameter = MOST_POPULAR;
                 fetchMovieList(getParameter);
                 return true;
 
-                default:
-                    return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

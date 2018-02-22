@@ -5,4 +5,5 @@
     <string name="summary">Summary:</string>
     <string name="top_rated">Top Rated</string>
     <string name="most_popular">Most Popular</string>
+    <string name="released">Released:</string>
 </resources>

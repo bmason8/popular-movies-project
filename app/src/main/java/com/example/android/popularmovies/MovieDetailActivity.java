@@ -17,7 +17,9 @@ public class MovieDetailActivity extends AppCompatActivity {
     private ImageView mMoviePosterImage;
     private ImageView mMovieBackdropImage;
     private RatingBar mUserRating;
-    private TextView tvMovieTitle, tvMovieOverview, tvMovieReleaseDate;
+    private TextView tvMovieTitle;
+    private TextView tvMovieOverview;
+    private TextView tvMovieReleaseDate;
     private String sMovieUserRating;
 
 
@@ -62,6 +64,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         rating = (rating / 2);
         mUserRating.setRating(rating);
         Log.d("userRating2: ", String.valueOf(rating));
-        tvMovieReleaseDate.setText("Released: " + intent.getStringExtra("releaseDate"));
+        tvMovieReleaseDate.setText(getString(R.string.released) + intent.getStringExtra("releaseDate"));
+
     }
 }

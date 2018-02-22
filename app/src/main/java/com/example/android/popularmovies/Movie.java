@@ -11,7 +11,7 @@ import java.util.List;
 public class Movie {
 
     // The instructions recommended using w185 for the image size but that seems too small
-    public static final String TMDB_IMAGE_PATH = "http://image.tmdb.org/t/p/w342";
+    private static final String TMDB_IMAGE_PATH = "http://image.tmdb.org/t/p/w342";
 
     private String title;
 

@@ -20,15 +20,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '26.0.3'
+    buildTypes.each{
+        it.buildConfigField 'String', 'MY_MOVIE_DB_API_KEY', MyMovieDbApiKey
+    }
+    buildToolsVersion '27.0.3'
 }
 
 dependencies {
-    compile 'com.android.support:recyclerview-v7:26.1.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'

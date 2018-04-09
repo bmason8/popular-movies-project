@@ -10,32 +10,40 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class MovieDetailActivity extends AppCompatActivity {
 
+    // RatingBar
+    @BindView(R.id.movie_user_rating)
+    RatingBar mUserRating;
 
-    private ImageView mMoviePosterImage;
-    private ImageView mMovieBackdropImage;
-    private RatingBar mUserRating;
-    private TextView tvMovieTitle;
-    private TextView tvMovieOverview;
-    private TextView tvMovieReleaseDate;
+    // ImageViews
+    @BindView(R.id.movie_poster_image)
+    ImageView mMoviePosterImage;
+    @BindView(R.id.movie_backdrop_image)
+    ImageView mMovieBackdropImage;
+
+    // TextViews
+    @BindView(R.id.movie_title)
+    TextView tvMovieTitle;
+    @BindView(R.id.movie_overview)
+    TextView tvMovieOverview;
+    @BindView(R.id.movie_release_date)
+    TextView tvMovieReleaseDate;
+
+//    @BindView(R.id.movie_user_rating)
+//    TextView tvMovieUserRating;
+
     private String sMovieUserRating;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_poster_item);
-
-        mMoviePosterImage = findViewById(R.id.movie_poster_image);
-        mMovieBackdropImage = findViewById(R.id.movie_backdrop_image);
-        mUserRating = findViewById(R.id.movie_user_rating);
-        tvMovieTitle = findViewById(R.id.movie_title);
-        tvMovieOverview = findViewById(R.id.movie_overview);
-//        tvMovieUserRating = findViewById(R.id.movie_user_rating);
-        tvMovieReleaseDate = findViewById(R.id.movie_release_date);
-
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
 
@@ -44,12 +52,13 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         Picasso.with(this)
                 .load(backdropImageUrl)
-                .placeholder(R.color.colorAccent)
+                .placeholder(R.drawable.no_image_error)
+                .error(R.drawable.no_image_error)
                 .into(mMovieBackdropImage);
 
         Picasso.with(this)
                 .load(moviePosterImageUrl)
-                .placeholder(R.color.colorAccent)
+                .placeholder(R.color.colorPrimary)
                 .into(mMoviePosterImage);
 
         tvMovieTitle.setText(intent.getStringExtra("title"));
@@ -65,6 +74,5 @@ public class MovieDetailActivity extends AppCompatActivity {
         mUserRating.setRating(rating);
         Log.d("userRating2: ", String.valueOf(rating));
         tvMovieReleaseDate.setText(getString(R.string.released) + intent.getStringExtra("releaseDate"));
-
     }
 }

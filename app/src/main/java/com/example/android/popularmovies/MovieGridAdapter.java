@@ -74,7 +74,7 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
         // load image from web using Picasso
         Picasso.with(mContext)
                 .load(movie.getPoster())
-                .placeholder(R.color.colorAccent)
+                .placeholder(R.color.colorPrimary)
                 .into(holder.moviePosterImageView);
     }
 

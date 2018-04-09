@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
 
     private List<Movie> mMovieList;
 
-    private static final String API_KEY = "f406f3d6fecd4c4fcb9919780dc3954e";
+    private static final String API_KEY = BuildConfig.MY_MOVIE_DB_API_KEY;
     private String getParameter;
     private static final String TOP_RATED = "top_rated";
     private static final String MOST_POPULAR = "popular";

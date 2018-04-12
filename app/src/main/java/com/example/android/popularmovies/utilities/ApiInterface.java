@@ -18,4 +18,10 @@ public interface ApiInterface {
     @GET("{getParameter}")
     Call<Movie.MovieResult> getMovieResults(@Path("getParameter") String getParameter, @Query("api_key")String apiKey);
 
+//    @GET("{id}/videos")
+//    Call<MovieVideosResult> getMovieVideos(@Path("id") String movieId);
+//
+//    @GET("{id}/reviews")
+//    Call<MovieReviewsResult> getMovieReviews(@Path("id") String movieId);
+
 }

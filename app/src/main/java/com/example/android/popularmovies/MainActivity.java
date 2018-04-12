@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
     private String getParameter;
     private static final String TOP_RATED = "top_rated";
     private static final String MOST_POPULAR = "popular";
+    private static final String VIDEOS = "videos";
+    private static final String REVIEWS = "reviews";
 
 
     @Override
@@ -104,6 +106,8 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         intent.putExtra("description", movie.getDescription());
         intent.putExtra("userRating", movie.getUserRating());
         intent.putExtra("releaseDate", movie.getReleaseDate());
+//        intent.putExtra("reviews", );
+//        intent.putExtra("trailers", );
         startActivity(intent);
     }
 

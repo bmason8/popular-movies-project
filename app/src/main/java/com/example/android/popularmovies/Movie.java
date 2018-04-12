@@ -30,6 +30,12 @@ public class Movie {
     @SerializedName("release_date")
     private String releaseDate;
 
+    private String reviews;
+
+    private String trailers;
+
+
+    //Getter and Setters
 
     public String getTitle() {
         return title;
@@ -77,6 +83,22 @@ public class Movie {
 
     public void setBackdrop(String backdrop) {
         this.backdrop = backdrop;
+    }
+
+    public String getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(String reviews) {
+        this.reviews = reviews;
+    }
+
+    public String getTrailers() {
+        return trailers;
+    }
+
+    public void setTrailers(String trailers) {
+        this.trailers = trailers;
     }
 
         public static class MovieResult {

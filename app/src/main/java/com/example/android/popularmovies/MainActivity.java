@@ -11,8 +11,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.android.popularmovies.Movie.MovieResult;
 import com.example.android.popularmovies.MovieGridAdapter.MovieGridAdapterOnClickHandler;
+import com.example.android.popularmovies.model.Movie;
+import com.example.android.popularmovies.model.Movie.MovieResult;
 import com.example.android.popularmovies.utilities.ApiInterface;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
 
     private static final String API_KEY = BuildConfig.MY_MOVIE_DB_API_KEY;
     private String getParameter;
+    private static final String APPEND_REVIEWS_AND_VIDEOS = "&append_to_response=reviews,videos";
     private static final String TOP_RATED = "top_rated";
     private static final String MOST_POPULAR = "popular";
     private static final String VIDEOS = "videos";
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
 
         retrofit2.Call<Movie.MovieResult> call = apiInterface.getMovieResults(getParameter, API_KEY);
+        Log.d("call ", call.toString());
 
         call.enqueue(new Callback<MovieResult>() {
             @Override
@@ -106,8 +109,9 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         intent.putExtra("description", movie.getDescription());
         intent.putExtra("userRating", movie.getUserRating());
         intent.putExtra("releaseDate", movie.getReleaseDate());
-//        intent.putExtra("reviews", );
-//        intent.putExtra("trailers", );
+//        intent.putExtra("reviews", (Parcelable) movie.getReviews());
+//        intent.putExtra("reviews", movie.getReviews());
+
         startActivity(intent);
     }
 
@@ -131,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
                 getParameter = MOST_POPULAR;
                 fetchMovieList(getParameter);
                 return true;
+                // TODO: a favourites case will need to be added here eventually
 
             default:
                 return super.onOptionsItemSelected(item);

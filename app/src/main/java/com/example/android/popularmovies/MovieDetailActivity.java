@@ -4,11 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.example.android.popularmovies.model.Reviews;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +37,12 @@ public class MovieDetailActivity extends AppCompatActivity {
     TextView tvMovieOverview;
     @BindView(R.id.movie_release_date)
     TextView tvMovieReleaseDate;
+    @BindView(R.id.reviews)
+    TextView tvReviews;
+
+    // ImageButtons
+    @BindView(R.id.trailer)
+    ImageButton mImageButton;
 
 //    @BindView(R.id.movie_user_rating)
 //    TextView tvMovieUserRating;
@@ -72,7 +82,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         float rating = Float.parseFloat(sMovieUserRating);
         rating = (rating / 2);
         mUserRating.setRating(rating);
-        Log.d("userRating2: ", String.valueOf(rating));
+//        Log.d("userRating2: ", String.valueOf(rating));
         tvMovieReleaseDate.setText(getString(R.string.released) + intent.getStringExtra("releaseDate"));
+        List<Reviews> temp = intent.getParcelableArrayListExtra("reviews");
+        Log.d("testReviews: ", temp.toString());
     }
 }

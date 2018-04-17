@@ -3,16 +3,12 @@ package com.example.android.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.example.android.popularmovies.model.Reviews;
 import com.squareup.picasso.Picasso;
-
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -84,7 +80,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         mUserRating.setRating(rating);
 //        Log.d("userRating2: ", String.valueOf(rating));
         tvMovieReleaseDate.setText(getString(R.string.released) + intent.getStringExtra("releaseDate"));
-        List<Reviews> temp = intent.getParcelableArrayListExtra("reviews");
-        Log.d("testReviews: ", temp.toString());
+//        List<Reviews> temp = intent.getParcelableArrayListExtra("reviews");
+//        Log.d("testReviews: ", temp.toString());
     }
 }

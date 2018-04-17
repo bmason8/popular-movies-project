@@ -1,53 +1,121 @@
 package com.example.android.popularmovies.model;
 
-import android.os.Parcel;
-
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
+public class Video {
+    @SerializedName("site")
+    private String site;
 
-public class Video implements android.os.Parcelable {
-    @SerializedName("results")
-    @Expose
-    private List<VideoResults> results = null;
+    @SerializedName("size")
+    private int size;
 
-    public List<VideoResults> getVideoResults() {
-        return results;
+    @SerializedName("iso_3166_1")
+    private String iso31661;
+
+    @SerializedName("name")
+    private String name;
+
+    @SerializedName("id")
+    private String id;
+
+    @SerializedName("type")
+    private String type;
+
+    @SerializedName("iso_639_1")
+    private String iso6391;
+
+    @SerializedName("key")
+    private String key;
+
+    public void setSite(String site){
+        this.site = site;
     }
 
-    public void setVideoResults(List<VideoResults> results) {
-        this.results = results;
+    public String getSite(){
+        return site;
+    }
+
+    public void setSize(int size){
+        this.size = size;
+    }
+
+    public int getSize(){
+        return size;
+    }
+
+    public void setIso31661(String iso31661){
+        this.iso31661 = iso31661;
+    }
+
+    public String getIso31661(){
+        return iso31661;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public void setId(String id){
+        this.id = id;
+    }
+
+    public String getId(){
+        return id;
+    }
+
+    public void setType(String type){
+        this.type = type;
+    }
+
+    public String getType(){
+        return type;
+    }
+
+    public void setIso6391(String iso6391){
+        this.iso6391 = iso6391;
+    }
+
+    public String getIso6391(){
+        return iso6391;
+    }
+
+    public void setKey(String key){
+        this.key = key;
+    }
+
+    public String getKey(){
+        return key;
+    }
+
+    public Video(String site, int size, String iso31661, String name, String id, String type,
+                 String iso6391, String key){
+        this.site = site;
+        this.size = size;
+        this.iso31661 = iso31661;
+        this.name = name;
+        this.id = id;
+        this.type = type;
+        this.iso6391 = iso6391;
+        this.key = key;
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    public String toString(){
+        return
+                "Videos{" +
+                        "site = '" + site + '\'' +
+                        ",size = '" + size + '\'' +
+                        ",iso_3166_1 = '" + iso31661 + '\'' +
+                        ",name = '" + name + '\'' +
+                        ",id = '" + id + '\'' +
+                        ",type = '" + type + '\'' +
+                        ",iso_639_1 = '" + iso6391 + '\'' +
+                        ",key = '" + key + '\'' +
+                        "}";
     }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeList(this.results);
-    }
-
-    public Video() {
-    }
-
-    protected Video(Parcel in) {
-        this.results = new ArrayList<VideoResults>();
-        in.readList(this.results, VideoResults.class.getClassLoader());
-    }
-
-    public static final Creator<Video> CREATOR = new Creator<Video>() {
-        @Override
-        public Video createFromParcel(Parcel source) {
-            return new Video(source);
-        }
-
-        @Override
-        public Video[] newArray(int size) {
-            return new Video[size];
-        }
-    };
 }
+

@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         intent.putExtra("description", movie.getDescription());
         intent.putExtra("userRating", movie.getUserRating());
         intent.putExtra("releaseDate", movie.getReleaseDate());
-//        intent.putExtra("reviews", (Parcelable) movie.getReviews());
 //        intent.putExtra("reviews", movie.getReviews());
 
         startActivity(intent);

@@ -19,6 +19,7 @@ import com.example.android.popularmovies.utilities.ApiInterface;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -80,19 +81,19 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
 
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
 
-        retrofit2.Call<Movie.MovieResult> call = apiInterface.getMovieResults(getParameter, API_KEY);
+        Call<MovieResult> call = apiInterface.getMovieResults(getParameter, API_KEY);
         Log.d("call ", call.toString());
 
         call.enqueue(new Callback<MovieResult>() {
             @Override
-            public void onResponse(retrofit2.Call<Movie.MovieResult> call, Response<MovieResult> response) {
+            public void onResponse(Call<Movie.MovieResult> call, Response<MovieResult> response) {
                 Movie.MovieResult result = response.body();
                 mAdapter.setmMovieList(result.getResults());
                 mMovieList = result.getResults();
             }
 
             @Override
-            public void onFailure(retrofit2.Call<Movie.MovieResult> call, Throwable t) {
+            public void onFailure(Call<Movie.MovieResult> call, Throwable t) {
                 Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                 Log.d("Fail: ", t.getMessage());
             }
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
     public void onItemClick(int position) {
         Movie movie = mMovieList.get(position);
         Intent intent = new Intent(this, MovieDetailActivity.class);
+        intent.putExtra("id", movie.getId());
         intent.putExtra("posterImage", movie.getPoster());
         intent.putExtra("backdrop", baseBackDropUrl + movie.getBackdrop());
         intent.putExtra("title", movie.getTitle());

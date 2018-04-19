@@ -11,8 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.popularmovies.model.Reviews;
-import com.example.android.popularmovies.model.ReviewsResults;
-import com.example.android.popularmovies.model.ReviewsResults.TestReviewsResult;
+import com.example.android.popularmovies.model.Reviews.ReviewsResult;
 import com.example.android.popularmovies.model.Video;
 import com.example.android.popularmovies.utilities.ApiInterface;
 import com.squareup.picasso.Picasso;
@@ -76,6 +75,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         int movie_id = intent.getIntExtra("id", 0);
+        Log.d("movieID: ", String.valueOf(movie_id));
         // Retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ApiInterface.MOVIE_DB_BASE_MOVIE_URL)
@@ -84,18 +84,17 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         ApiInterface apiInterface = retrofit.create(ApiInterface.class);
 
-        Call<TestReviewsResult> call = apiInterface.getMovieReviews(movie_id, API_KEY);
-        Log.d("call: ", call.toString());
+        Call<ReviewsResult> call = apiInterface.getMovieReviews(movie_id, API_KEY);
 
-        call.enqueue(new Callback<TestReviewsResult>() {
+        call.enqueue(new Callback<ReviewsResult>() {
             @Override
-            public void onResponse(Call<ReviewsResults.TestReviewsResult> call, Response<TestReviewsResult> response) {
-                ReviewsResults.TestReviewsResult result = response.body();
+            public void onResponse(Call<Reviews.ReviewsResult> call, Response<ReviewsResult> response) {
+                Reviews.ReviewsResult result = response.body();
                 mReviews = result.getResults();
             }
 
             @Override
-            public void onFailure(Call<ReviewsResults.TestReviewsResult> call, Throwable t) {
+            public void onFailure(Call<Reviews.ReviewsResult> call, Throwable t) {
                 Toast.makeText(MovieDetailActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
                 Log.d("Fail: ", t.getMessage());
             }
@@ -147,6 +146,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 //        tvTestVideo.setText(mVideo.toString());
 //        Log.d("testVideo: ", mVideo.toString());
         tvReviews.setText(mReviews.toString());
-        Log.d("reviews: ", mReviews.toString());
+        Log.d("reviews", mReviews.toString());
     }
 }

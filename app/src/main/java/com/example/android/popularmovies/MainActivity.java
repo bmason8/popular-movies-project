@@ -11,7 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.android.popularmovies.MovieGridAdapter.MovieGridAdapterOnClickHandler;
+import com.example.android.popularmovies.adapters.MovieGridAdapter;
+import com.example.android.popularmovies.adapters.MovieGridAdapter.MovieGridAdapterOnClickHandler;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.model.Movie.MovieResult;
 import com.example.android.popularmovies.utilities.ApiInterface;

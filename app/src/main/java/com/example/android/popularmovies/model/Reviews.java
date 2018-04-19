@@ -1,10 +1,12 @@
 package com.example.android.popularmovies.model;
 
+import java.util.List;
+
 public class Reviews {
-    public Reviews(String author, String content) {
-        this.author = author;
-        this.content = content;
-    }
+//    public Reviews(String author, String content) {
+//        this.author = author;
+//        this.content = content;
+//    }
 
     private String author;
     private String content;
@@ -24,4 +26,13 @@ public class Reviews {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public static class ReviewsResult {
+        private List<Reviews> results;
+
+        public List<Reviews> getResults() {
+            return results;
+        }
+    }
+
 }

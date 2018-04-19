@@ -4,7 +4,7 @@ package com.example.android.popularmovies.utilities;
 // https://www.androidhive.info/2016/05/android-working-with-retrofit-http-library/
 
 import com.example.android.popularmovies.model.Movie.MovieResult;
-import com.example.android.popularmovies.model.ReviewsResults.TestReviewsResult;
+import com.example.android.popularmovies.model.Reviews.ReviewsResult;
 import com.example.android.popularmovies.model.VideoResults;
 
 import retrofit2.Call;
@@ -24,6 +24,6 @@ public interface ApiInterface {
     Call<VideoResults> getMovieVideos(@Path("movie_id") int id, @Query("api_key") String apiKey);
 
     @GET("{movie_id}/reviews")
-    Call<TestReviewsResult> getMovieReviews(@Path("movie_id") int id, @Query("api_key") String apiKey);
+    Call<ReviewsResult> getMovieReviews(@Path("movie_id") int id, @Query("api_key") String apiKey);
 
 }

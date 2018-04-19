@@ -1,35 +1,33 @@
 package com.example.android.popularmovies.model;
 
-import java.util.List;
-
 public class ReviewsResults {
 
-    private String author;
-    private String content;
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public static class TestReviewsResult {
-        private List<Reviews> results;
-
-        public List<Reviews> getResults() {
-            return results;
-        }
-    }
+//    private String author;
+//    private String content;
+//
+//    public String getAuthor() {
+//        return author;
+//    }
+//
+//    public void setAuthor(String author) {
+//        this.author = author;
+//    }
+//
+//    public String getContent() {
+//        return content;
+//    }
+//
+//    public void setContent(String content) {
+//        this.content = content;
+//    }
+//
+//    public static class TestReviewsResult {
+//        private List<Reviews> results;
+//
+//        public List<Reviews> getResults() {
+//            return results;
+//        }
+//    }
 
     //    private List<Reviews> results = new ArrayList<>();
 //

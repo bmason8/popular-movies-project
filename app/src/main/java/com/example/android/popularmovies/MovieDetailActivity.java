@@ -3,6 +3,8 @@ package com.example.android.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -10,6 +12,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.adapters.ReviewsAdapter;
 import com.example.android.popularmovies.model.Reviews;
 import com.example.android.popularmovies.model.Reviews.ReviewsResult;
 import com.example.android.popularmovies.model.Video;
@@ -63,11 +66,20 @@ public class MovieDetailActivity extends AppCompatActivity {
     private List<Video> mVideo;
     private List<Reviews> mReviews;
 
+    // RecyclerView
+    private RecyclerView recyclerView;
+//    private ReviewsAdapter adapter;
+    private RecyclerView.Adapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_poster_item);
         ButterKnife.bind(this);
+
+        recyclerView = findViewById(R.id.rv_movie_reviews);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mVideo = new ArrayList<>();
         mReviews = new ArrayList<>();
@@ -76,6 +88,10 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         int movie_id = intent.getIntExtra("id", 0);
         Log.d("movieID: ", String.valueOf(movie_id));
+
+        adapter = new ReviewsAdapter(mReviews, this);
+        recyclerView.setAdapter(adapter);
+
         // Retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ApiInterface.MOVIE_DB_BASE_MOVIE_URL)

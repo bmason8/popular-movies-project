@@ -104,8 +104,9 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         call.enqueue(new Callback<ReviewsResult>() {
             @Override
-            public void onResponse(Call<Reviews.ReviewsResult> call, Response<ReviewsResult> response) {
-                Reviews.ReviewsResult result = response.body();
+            public void onResponse(Call<ReviewsResult> call, Response<ReviewsResult> response) {
+                ReviewsResult result = response.body();
+//                adapter.setmMovieList(result.getResults());
                 mReviews = result.getResults();
             }
 

@@ -1,21 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/tv_author_list_item"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        tools:text="Temp"/>
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:layout_marginTop="8dp" app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
+        tools:text="Author Name"/>
 
     <TextView
         android:id="@+id/tv_content_list_item"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        tools:text="I like the occasional crossover but when Flash started, and then Supergirl... argh. I don'T watch those other two shows, but somewhere along the way I felt like I had to just to follow along in THIS show."/>
-</LinearLayout>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_author_list_item"
+        tools:text="Sample review text."/>
+</android.support.constraint.ConstraintLayout>
+
+
+<!--<LinearLayout-->
+<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--xmlns:tools="http://schemas.android.com/tools"-->
+<!--android:orientation="vertical"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="wrap_content">-->
+
+<!--<TextView-->
+    <!--android:id="@+id/tv_author_list_item"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_width="match_parent"-->
+    <!--tools:text="Author Name"/>-->
+
+<!--<TextView-->
+    <!--android:id="@+id/tv_content_list_item"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_width="match_parent"-->
+    <!--tools:text="Sample review text."/>-->
+<!--</LinearLayout>-->

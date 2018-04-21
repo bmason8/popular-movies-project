@@ -2,6 +2,7 @@ package com.example.android.popularmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,9 +13,9 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.android.popularmovies.adapters.ReviewsAdapter;
-import com.example.android.popularmovies.model.Reviews;
-import com.example.android.popularmovies.model.Reviews.ReviewsResult;
+import com.example.android.popularmovies.adapters.ReviewListAdapter;
+import com.example.android.popularmovies.model.Review;
+import com.example.android.popularmovies.model.ReviewListResponse;
 import com.example.android.popularmovies.model.Video;
 import com.example.android.popularmovies.utilities.ApiInterface;
 import com.squareup.picasso.Picasso;
@@ -50,10 +51,6 @@ public class MovieDetailActivity extends AppCompatActivity {
     TextView tvMovieOverview;
     @BindView(R.id.movie_release_date)
     TextView tvMovieReleaseDate;
-    @BindView(R.id.reviews)
-    TextView tvReviews;
-    @BindView(R.id.testVideo)
-    TextView tvTestVideo;
 
     // ImageButtons
     @BindView(R.id.trailer)
@@ -64,12 +61,12 @@ public class MovieDetailActivity extends AppCompatActivity {
     private static final String API_KEY = BuildConfig.MY_MOVIE_DB_API_KEY;
     private String sMovieUserRating;
     private List<Video> mVideo;
-    private List<Reviews> mReviews;
+    private List<Review> mReviewList = new ArrayList<>();
+    int movie_id;
 
     // RecyclerView
-    private RecyclerView recyclerView;
-//    private ReviewsAdapter adapter;
-    private RecyclerView.Adapter adapter;
+    private RecyclerView mRecyclerView;
+    private ReviewListAdapter mReviewListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,60 +74,14 @@ public class MovieDetailActivity extends AppCompatActivity {
         setContentView(R.layout.movie_poster_item);
         ButterKnife.bind(this);
 
-        recyclerView = findViewById(R.id.rv_movie_reviews);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        mVideo = new ArrayList<>();
-        mReviews = new ArrayList<>();
-
         Intent intent = getIntent();
-
-        int movie_id = intent.getIntExtra("id", 0);
+        movie_id = intent.getIntExtra("id", 0);
         Log.d("movieID: ", String.valueOf(movie_id));
 
-        adapter = new ReviewsAdapter(mReviews, this);
-        recyclerView.setAdapter(adapter);
+        initiateRecyclerView();
+        loadReviews();
 
-        // Retrofit
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ApiInterface.MOVIE_DB_BASE_MOVIE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
-
-        Call<ReviewsResult> call = apiInterface.getMovieReviews(movie_id, API_KEY);
-
-        call.enqueue(new Callback<ReviewsResult>() {
-            @Override
-            public void onResponse(Call<ReviewsResult> call, Response<ReviewsResult> response) {
-                ReviewsResult result = response.body();
-//                adapter.setmMovieList(result.getResults());
-                mReviews = result.getResults();
-            }
-
-            @Override
-            public void onFailure(Call<Reviews.ReviewsResult> call, Throwable t) {
-                Toast.makeText(MovieDetailActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                Log.d("Fail: ", t.getMessage());
-            }
-        });
-
-//        Call<VideoResults> call = apiInterface.getMovieVideos(movie_id, API_KEY);
-//        call.enqueue(new Callback<VideoResults>() {
-//            @Override
-//            public void onResponse(Call<VideoResults> call, Response<VideoResults> response) {
-//                VideoResults result = response.body();
-//                mVideo = result.getResults();
-//            }
-//
-//            @Override
-//            public void onFailure(Call<VideoResults> call, Throwable t) {
-//                Toast.makeText(MovieDetailActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-//                Log.d("Fail: ", t.getMessage());
-//            }
-//        });
+        mVideo = new ArrayList<>();
 
         String backdropImageUrl = intent.getStringExtra("backdrop");
         String moviePosterImageUrl = intent.getStringExtra("posterImage");
@@ -159,10 +110,43 @@ public class MovieDetailActivity extends AppCompatActivity {
         mUserRating.setRating(rating);
 //        Log.d("userRating2: ", String.valueOf(rating));
         tvMovieReleaseDate.setText(getString(R.string.released) + intent.getStringExtra("releaseDate"));
-//        List<Reviews> temp = intent.getParcelableArrayListExtra("reviews");
-//        tvTestVideo.setText(mVideo.toString());
-//        Log.d("testVideo: ", mVideo.toString());
-        tvReviews.setText(mReviews.toString());
-        Log.d("reviews", mReviews.toString());
     }
+
+    private void loadReviews(){
+        // Retrofit
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ApiInterface.MOVIE_DB_BASE_MOVIE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+
+        Call<ReviewListResponse> call = apiInterface.getMovieReviews(movie_id, API_KEY);
+
+        call.enqueue(new Callback<ReviewListResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<ReviewListResponse> call, @NonNull Response<ReviewListResponse> response) {
+                ReviewListResponse result = response.body();
+                // TODO insert a check for null and handle if response is null
+                List<Review> reviewList = result.getmReviewList();
+                mReviewListAdapter.setmReviewList(reviewList);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<ReviewListResponse> call, @NonNull Throwable t) {
+                Toast.makeText(MovieDetailActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.d("Fail: ", t.getMessage());
+            }
+        });
+    }
+
+    private void initiateRecyclerView(){
+
+        mRecyclerView = findViewById(R.id.rv_movie_reviews);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mReviewListAdapter = new ReviewListAdapter(getBaseContext(), mReviewList);
+        mRecyclerView.setAdapter(mReviewListAdapter);
+        mReviewListAdapter.setmReviewList(mReviewList);
+    }
+
 }

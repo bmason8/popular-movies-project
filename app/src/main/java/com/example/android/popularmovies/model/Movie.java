@@ -149,7 +149,7 @@ public class Movie {
 //    private Video video;
 //    @SerializedName("reviews")
 //    @Expose
-//    private Reviews reviews;
+//    private Review reviews;
 //
 //    // Getters
 //
@@ -185,11 +185,11 @@ public class Movie {
 //        this.video = video;
 //    }
 //
-//    public Reviews getReviews() {
+//    public Review getReviews() {
 //        return reviews;
 //    }
 //
-//    public void setReviews(Reviews reviews) {
+//    public void setReviews(Review reviews) {
 //        this.reviews = reviews;
 //    }
 //
@@ -229,7 +229,7 @@ public class Movie {
 //        this.userRating = in.readString();
 //        this.releaseDate = in.readString();
 ////        this.video = in.readParcelable(Video.class.getClassLoader());
-////        this.reviews = in.readParcelable(Reviews.class.getClassLoader());
+////        this.reviews = in.readParcelable(Review.class.getClassLoader());
 //    }
 //
 //    public static final Creator<Movie> CREATOR = new Creator<Movie>() {

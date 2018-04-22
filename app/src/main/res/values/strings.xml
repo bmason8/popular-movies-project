@@ -7,4 +7,6 @@
     <string name="most_popular">Most Popular</string>
     <string name="released">Released:</string>
     <string name="review">Reviews:</string>
+    <string name="trailers">Trailers:</string>
+    <string name="movie_trailer_image">Movie trailer image</string>
 </resources>

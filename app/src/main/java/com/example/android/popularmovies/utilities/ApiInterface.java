@@ -5,7 +5,7 @@ package com.example.android.popularmovies.utilities;
 
 import com.example.android.popularmovies.model.Movie.MovieResult;
 import com.example.android.popularmovies.model.ReviewListResponse;
-import com.example.android.popularmovies.model.VideoResults;
+import com.example.android.popularmovies.model.VideoListResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -21,7 +21,7 @@ public interface ApiInterface {
     Call<MovieResult> getMovieResults(@Path("getParameter") String getParameter, @Query("api_key")String apiKey);
 
     @GET("{movie_id}/videos")
-    Call<VideoResults> getMovieVideos(@Path("movie_id") int id, @Query("api_key") String apiKey);
+    Call<VideoListResponse> getMovieVideos(@Path("movie_id") int id, @Query("api_key") String apiKey);
 
     @GET("{movie_id}/reviews")
     Call<ReviewListResponse> getMovieReviews(@Path("movie_id") int id, @Query("api_key") String apiKey);

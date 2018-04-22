@@ -18,7 +18,7 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
     private final List<Review> mReviewList;
 
 
-    public ReviewListAdapter( Context context, List<Review> reviewList) {
+    public ReviewListAdapter(Context context, List<Review> reviewList) {
         this.mContext = context;
         this.mReviewList = reviewList;
     }
@@ -60,63 +60,4 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
         mReviewList.addAll(reviewList);
         notifyDataSetChanged();
     }
-
-
 }
-
-
-
-
-
-
-
-
-//    public ReviewListAdapter(Context context) {
-//        this.mContext = context;
-//        this.mReviewsList = new ArrayList<>();
-//    }
-//
-//
-//    public class ReviewsAdapterViewHolder extends RecyclerView.Adapter<ReviewListAdapter.ReviewsAdapterViewHolder> {
-//
-//
-//        public ReviewListAdapter {
-//            super(view);
-//            moviePosterImageView = view.findViewById(R.id.movie_poster);
-//            // catch the click on the view in our adapter and pass it over the interface to our activity
-//            view.setOnClickListener(this);
-//        }
-//
-//        @Override
-//        public void onClick(View v) {
-//            int position = getAdapterPosition();
-//            mListener.onItemClick(position);
-//        }
-//    }
-//
-//
-//    @Override
-//    public ReviewListAdapter.ReviewsAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-//        final Context context = viewGroup.getContext();
-//        int layoutIdForListItem = R.layout.movie_poster_item;
-//        LayoutInflater inflater = LayoutInflater.from(context);
-//
-//        final View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
-//        return new ReviewListAdapter.ReviewsAdapterViewHolder(view);
-//    }
-//
-//    @Override
-//    public void onBindViewHolder(ReviewListAdapter.ReviewsAdapterViewHolder holder, int position) {
-//        Review reviews = mReviewsList.get(position);
-//    }
-//
-//    @Override
-//    public int getItemCount() {
-//        return mReviewsList.size();
-//    }
-//
-//    public void setmReviewsList(List<Review> mReviewList) {
-//        this.mReviewsList.clear();
-//        this.mReviewsList.addAll(mReviewList);
-//        notifyDataSetChanged();
-//    }

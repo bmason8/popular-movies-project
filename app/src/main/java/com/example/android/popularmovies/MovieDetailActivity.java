@@ -4,19 +4,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.popularmovies.adapters.ReviewListAdapter;
+import com.example.android.popularmovies.adapters.VideoListAdapter;
 import com.example.android.popularmovies.model.Review;
 import com.example.android.popularmovies.model.ReviewListResponse;
 import com.example.android.popularmovies.model.Video;
+import com.example.android.popularmovies.model.VideoListResponse;
 import com.example.android.popularmovies.utilities.ApiInterface;
 import com.squareup.picasso.Picasso;
 
@@ -52,21 +54,18 @@ public class MovieDetailActivity extends AppCompatActivity {
     @BindView(R.id.movie_release_date)
     TextView tvMovieReleaseDate;
 
-    // ImageButtons
-    @BindView(R.id.trailer)
-    ImageButton mImageButton;
-
 //    @BindView(R.id.movie_user_rating)
 //    TextView tvMovieUserRating;
     private static final String API_KEY = BuildConfig.MY_MOVIE_DB_API_KEY;
     private String sMovieUserRating;
-    private List<Video> mVideo;
+    private List<Video> mVideoList = new ArrayList<>();
     private List<Review> mReviewList = new ArrayList<>();
     int movie_id;
 
     // RecyclerView
     private RecyclerView mRecyclerView;
     private ReviewListAdapter mReviewListAdapter;
+    private VideoListAdapter mVideoListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,10 +77,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         movie_id = intent.getIntExtra("id", 0);
         Log.d("movieID: ", String.valueOf(movie_id));
 
-        initiateRecyclerView();
+        initiateVideoListRecyclerView();
+        initiateReviewListRecyclerView();
+        loadMovieTrailers();
         loadReviews();
-
-        mVideo = new ArrayList<>();
 
         String backdropImageUrl = intent.getStringExtra("backdrop");
         String moviePosterImageUrl = intent.getStringExtra("posterImage");
@@ -112,8 +111,39 @@ public class MovieDetailActivity extends AppCompatActivity {
         tvMovieReleaseDate.setText(getString(R.string.released) + intent.getStringExtra("releaseDate"));
     }
 
+    private void loadMovieTrailers(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(ApiInterface.MOVIE_DB_BASE_MOVIE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+
+        Call<VideoListResponse> call = apiInterface.getMovieVideos(movie_id, API_KEY);
+
+        call.enqueue(new Callback<VideoListResponse>() {
+            @Override
+            public void onResponse(@NonNull Call<VideoListResponse> call, @NonNull Response<VideoListResponse> response) {
+                VideoListResponse result = response.body();
+                // TODO insert a check for null and handle if response is null
+                if (result != null) {
+                    List<Video> videoList = result.getVideoList();
+                    mVideoListAdapter.setData(videoList);
+                } else {
+                    // TODO show something instead
+                    Log.d("movieTrailerResponse", "No movie trailers available");
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<VideoListResponse> call, @NonNull Throwable t) {
+                Toast.makeText(MovieDetailActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.d("Fail: ", t.getMessage());
+            }
+        });
+    }
+
     private void loadReviews(){
-        // Retrofit
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ApiInterface.MOVIE_DB_BASE_MOVIE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -140,13 +170,26 @@ public class MovieDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void initiateRecyclerView(){
+    private void initiateReviewListRecyclerView(){
 
+        // https://medium.com/@szholdiyarov/how-to-add-divider-to-list-and-recycler-views-858344450401
+        // used for putting the dividing line between recyclerView items
         mRecyclerView = findViewById(R.id.rv_movie_reviews);
+        DividerItemDecoration itemDecor = new DividerItemDecoration(getBaseContext(), DividerItemDecoration.VERTICAL);
+        mRecyclerView.addItemDecoration(itemDecor);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mReviewListAdapter = new ReviewListAdapter(getBaseContext(), mReviewList);
         mRecyclerView.setAdapter(mReviewListAdapter);
         mReviewListAdapter.setmReviewList(mReviewList);
+    }
+
+    private void initiateVideoListRecyclerView(){
+
+        mRecyclerView = findViewById(R.id.rv_movie_trailers);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mVideoListAdapter = new VideoListAdapter(getBaseContext(), mVideoList);
+        mRecyclerView.setAdapter(mVideoListAdapter);
+        mVideoListAdapter.setData(mVideoList);
     }
 
 }

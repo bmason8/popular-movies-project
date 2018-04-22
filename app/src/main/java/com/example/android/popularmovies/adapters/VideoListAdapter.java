@@ -39,9 +39,9 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
         final String videoId = mVideoList.get(position).getKey();
         holder.setVideoId(videoId);
         Uri videoThumbnailUri = NetworkUtils.getYouTubeThumbnailImage(videoId);
-        Picasso.with(mContext).load(videoThumbnailUri).into(holder.thumbNailImageView);
+        Picasso.with(mContext).load(videoThumbnailUri).into(holder.thumbNailImgView);
 
-        holder.nameTextView.setText(mVideoList.get(position).getName());
+        holder.nameTv.setText(mVideoList.get(position).getName());
     }
 
     @Override
@@ -59,15 +59,15 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     }
 
     class VideoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        static final String VND_YOUTUBE = "vnd.youtube:";
-        private ImageView thumbNailImageView;
+        static final String YOUTUBE_VND = "vnd.youtube:";
+        private ImageView thumbNailImgView;
         private String mVideoId;
-        private TextView nameTextView;
+        private TextView nameTv;
 
         VideoViewHolder(View itemView) {
             super(itemView);
-            thumbNailImageView = itemView.findViewById(R.id.img_movie_trailer_list_item);
-            nameTextView = itemView.findViewById(R.id.tv_movie_trailer_list_item);
+            thumbNailImgView = itemView.findViewById(R.id.img_movie_trailer_list_item);
+            nameTv = itemView.findViewById(R.id.tv_movie_trailer_list_item);
             itemView.setOnClickListener(this);
         }
 
@@ -75,15 +75,19 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             this.mVideoId = movieId;
         }
 
+        // https://stackoverflow.com/questions/9439995/how-to-launch-youtube-application-to-open-a-channel
+        // used for figuring out how to launch the video from Youtube
+
         @Override
         public void onClick(View v) {
-            Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(VND_YOUTUBE + mVideoId));
-            Intent webIntent = new Intent(Intent.ACTION_VIEW,
+            // if the Youtube app isn't installed it'll launch it in a browser
+            Intent youtubeAppIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_VND + mVideoId));
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse(NetworkUtils.getYouTubeVideoUrl(mVideoId).toString()));
             try {
-                mContext.startActivity(appIntent);
+                mContext.startActivity(youtubeAppIntent);
             } catch (ActivityNotFoundException ex) {
-                mContext.startActivity(webIntent);
+                mContext.startActivity(browserIntent);
             }
         }
     }

@@ -16,7 +16,6 @@ public interface ApiInterface {
 
     String MOVIE_DB_BASE_MOVIE_URL = "https://api.themoviedb.org/3/movie/";
 
-
     @GET("{getParameter}")
     Call<MovieResult> getMovieResults(@Path("getParameter") String getParameter, @Query("api_key")String apiKey);
 

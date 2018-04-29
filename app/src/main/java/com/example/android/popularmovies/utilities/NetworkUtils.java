@@ -15,6 +15,9 @@ public class NetworkUtils {
     private static final String YOUTUBE_VIDEO_WATCH_PATH = "watch";
     private static final String YOUTUBE_VIDEO_ID_PARAM = "v";
 
+    private static final String TMDB_POSTER_IMAGE_PATH = "http://image.tmdb.org/t/p/w342";
+    private static final String TMDB_BACKDROP_IMAGE_PATH = "https://image.tmdb.org/t/p/w500";
+
     // builds URL from Uri for Youtube links
     private static URL buildYoutubeUrl(Uri uri) {
         try {
@@ -43,5 +46,22 @@ public class NetworkUtils {
 
         return buildYoutubeUrl(videoUri);
     }
+
+
+    public static Uri getTmdbBackdropImage(String backdropImagePath) {
+        Uri backdropUri = Uri.parse(TMDB_BACKDROP_IMAGE_PATH).buildUpon()
+                .appendEncodedPath(backdropImagePath)
+                .build();
+        return backdropUri;
+    }
+
+    public static Uri getTmdbPosterImage(String imagePath) {
+        Uri posterUri = Uri.parse(TMDB_POSTER_IMAGE_PATH).buildUpon()
+                .appendEncodedPath(imagePath)
+                .build();
+        return posterUri;
+    }
+
+
 
 }

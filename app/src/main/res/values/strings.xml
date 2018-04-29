@@ -9,4 +9,6 @@
     <string name="review">Reviews:</string>
     <string name="trailers">Trailers:</string>
     <string name="movie_trailer_image">Movie trailer image</string>
+    <string name="favourite_button_description">Favourite button</string>
+    <string name="settings_favourites">Favourites</string>
 </resources>

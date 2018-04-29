@@ -1,8 +1,11 @@
 package com.example.android.popularmovies;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,11 +18,14 @@ import android.widget.Toast;
 
 import com.example.android.popularmovies.adapters.ReviewListAdapter;
 import com.example.android.popularmovies.adapters.VideoListAdapter;
+import com.example.android.popularmovies.data.MovieDatabase;
+import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.model.Review;
 import com.example.android.popularmovies.model.ReviewListResponse;
 import com.example.android.popularmovies.model.Video;
 import com.example.android.popularmovies.model.VideoListResponse;
 import com.example.android.popularmovies.utilities.ApiInterface;
+import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -27,6 +33,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,6 +42,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class MovieDetailActivity extends AppCompatActivity {
+
+    public static MovieDatabase movieDatabase;
 
     // RatingBar
     @BindView(R.id.movie_user_rating)
@@ -45,6 +54,10 @@ public class MovieDetailActivity extends AppCompatActivity {
     ImageView mMoviePosterImage;
     @BindView(R.id.movie_backdrop_image)
     ImageView mMovieBackdropImage;
+    // Floating Action Button
+    @BindView(R.id.favourite_btn)
+    FloatingActionButton mFavourite_btn;
+    Movie currentMovie = new Movie();
 
     // TextViews
     @BindView(R.id.movie_title)
@@ -66,33 +79,45 @@ public class MovieDetailActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private ReviewListAdapter mReviewListAdapter;
     private VideoListAdapter mVideoListAdapter;
+    // Image Strings
+    String backdropImageUrl, moviePosterImageUrl;
+    Uri backdropImageUri, moviePosterImageUri;
+
+    @OnClick(R.id.favourite_btn)
+    void markMovieAsFavourite() {
+        markAsFavourite(currentMovie);
+        mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.movie_poster_item);
+        setContentView(R.layout.movie_details_item);
         ButterKnife.bind(this);
 
         Intent intent = getIntent();
         movie_id = intent.getIntExtra("id", 0);
-        Log.d("movieID: ", String.valueOf(movie_id));
 
         initiateVideoListRecyclerView();
         initiateReviewListRecyclerView();
         loadMovieTrailers();
         loadReviews();
 
-        String backdropImageUrl = intent.getStringExtra("backdrop");
-        String moviePosterImageUrl = intent.getStringExtra("posterImage");
+        backdropImageUrl = intent.getStringExtra("backdrop");
+        backdropImageUri = NetworkUtils.getTmdbBackdropImage(backdropImageUrl);
+
+        moviePosterImageUrl = intent.getStringExtra("posterImage");
+        moviePosterImageUri = NetworkUtils.getTmdbPosterImage(moviePosterImageUrl);
+
 
         Picasso.with(this)
-                .load(backdropImageUrl)
+                .load(backdropImageUri)
                 .placeholder(R.drawable.no_image_error)
                 .error(R.drawable.no_image_error)
                 .into(mMovieBackdropImage);
 
         Picasso.with(this)
-                .load(moviePosterImageUrl)
+                .load(moviePosterImageUri)
                 .placeholder(R.color.colorPrimary)
                 .into(mMoviePosterImage);
 
@@ -109,6 +134,16 @@ public class MovieDetailActivity extends AppCompatActivity {
         mUserRating.setRating(rating);
 //        Log.d("userRating2: ", String.valueOf(rating));
         tvMovieReleaseDate.setText(getString(R.string.released) + intent.getStringExtra("releaseDate"));
+
+        // build Movie object for inserting into database
+        currentMovie.setId(movie_id);
+        currentMovie.setBackdrop(backdropImageUrl);
+        currentMovie.setPoster(moviePosterImageUrl);
+        currentMovie.setTitle(intent.getStringExtra("title"));
+        currentMovie.setDescription(intent.getStringExtra("description"));
+        currentMovie.setUserRating(intent.getStringExtra("userRating"));
+        currentMovie.setReleaseDate(intent.getStringExtra("releaseDate"));
+
     }
 
     private void loadMovieTrailers(){
@@ -190,6 +225,17 @@ public class MovieDetailActivity extends AppCompatActivity {
         mVideoListAdapter = new VideoListAdapter(getBaseContext(), mVideoList);
         mRecyclerView.setAdapter(mVideoListAdapter);
         mVideoListAdapter.setData(mVideoList);
+    }
+
+    private void markAsFavourite(Movie movie) {
+        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").allowMainThreadQueries().build();
+        movieDatabase.movieDao().insertSingleMovie(movie);
+        Toast.makeText(getApplicationContext(), "Movie saved to favourites!", Toast.LENGTH_LONG).show();
+    }
+
+    private void removeFromFavourites(Movie movie) {
+        movieDatabase.movieDao().deleteSingleMovie(movie);
+        Toast.makeText(getApplicationContext(), "Movie removed from favourites!", Toast.LENGTH_LONG).show();
     }
 
 }

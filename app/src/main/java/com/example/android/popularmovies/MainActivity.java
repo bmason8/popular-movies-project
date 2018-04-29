@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.android.popularmovies.adapters.MovieGridAdapter;
 import com.example.android.popularmovies.adapters.MovieGridAdapter.MovieGridAdapterOnClickHandler;
+import com.example.android.popularmovies.data.MovieDatabase;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.model.Movie.MovieResult;
 import com.example.android.popularmovies.utilities.ApiInterface;
@@ -32,13 +34,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements MovieGridAdapterOnClickHandler {
     private RecyclerView mRecyclerView;
     private MovieGridAdapter mAdapter;
+    public static MovieDatabase movieDatabase;
     final String baseBackDropUrl = "https://image.tmdb.org/t/p/w500";
 
     private List<Movie> mMovieList;
 
     private static final String API_KEY = BuildConfig.MY_MOVIE_DB_API_KEY;
     private String getParameter;
-    private static final String APPEND_REVIEWS_AND_VIDEOS = "&append_to_response=reviews,videos";
     private static final String TOP_RATED = "top_rated";
     private static final String MOST_POPULAR = "popular";
     private static final String VIDEOS = "videos";
@@ -50,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").allowMainThreadQueries().build();
+
         getParameter = MOST_POPULAR;
 
         mMovieList = new ArrayList<>();
@@ -60,10 +64,36 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
 
     }
 
+    private void fetchFavourites() {
+
+        // set a LayoutManager on the RecyclerView
+        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        // mRecyclerView.setHasFixedSize(true);
+        // create a new MovieGridAdapter and give it context
+        mAdapter = new MovieGridAdapter(this);
+        // set the new MovieGridAdapter on the RecyclerView
+        mRecyclerView.setAdapter(mAdapter);
+
+//        mAdapter.setmMovieList(mMovieList);
+
+        // set the onClickListener from MovieDetailActivity on the adapter
+        mAdapter.MovieGridAdapterClickListener(MainActivity.this);
+        List<Movie> movies = new ArrayList<>();
+        mAdapter.setmMovieList(movies);
+
+        // query the local database for movies and pass them to the mAdapter and mMovieList
+        movies = movieDatabase.movieDao().getMovies();
+
+        mAdapter.setmMovieList(movies);
+        mMovieList = movies;
+
+
+    }
+
     private void fetchMovieList(String getParameter) {
         // set a LayoutManager on the RecyclerView
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-//        mRecyclerView.setHasFixedSize(true);
+        // mRecyclerView.setHasFixedSize(true);
         // create a new MovieGridAdapter and give it context
         mAdapter = new MovieGridAdapter(this);
         // set the new MovieGridAdapter on the RecyclerView
@@ -71,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         // set the onClickListener from MovieDetailActivity on the adapter
         mAdapter.MovieGridAdapterClickListener(MainActivity.this);
         List<Movie> movies = new ArrayList<>();
-
         mAdapter.setmMovieList(movies);
 
         // Retrofit
@@ -107,12 +136,11 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         Intent intent = new Intent(this, MovieDetailActivity.class);
         intent.putExtra("id", movie.getId());
         intent.putExtra("posterImage", movie.getPoster());
-        intent.putExtra("backdrop", baseBackDropUrl + movie.getBackdrop());
+        intent.putExtra("backdrop", movie.getBackdrop());
         intent.putExtra("title", movie.getTitle());
         intent.putExtra("description", movie.getDescription());
         intent.putExtra("userRating", movie.getUserRating());
         intent.putExtra("releaseDate", movie.getReleaseDate());
-//        intent.putExtra("reviews", movie.getReviews());
 
         startActivity(intent);
     }
@@ -137,7 +165,9 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
                 getParameter = MOST_POPULAR;
                 fetchMovieList(getParameter);
                 return true;
-                // TODO: a favourites case will need to be added here eventually
+            case R.id.settings_favourites:
+                fetchFavourites();
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);

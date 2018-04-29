@@ -1,6 +1,7 @@
 package com.example.android.popularmovies.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.ImageView;
 
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.model.Movie;
+import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import java.util.List;
 // Also used the lesson from the course on this topic: S03.02 RecyclerViewClickHandling
 
 public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.MovieGridAdapterViewHolder> {
+
     private final Context mContext;
     private final List<Movie> mMovieList;
     private MovieGridAdapterOnClickHandler mListener;
@@ -63,7 +66,7 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
     @Override
     public MovieGridAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         final Context context = viewGroup.getContext();
-        int layoutIdForListItem = R.layout.movie_posters;
+        int layoutIdForListItem = R.layout.movie_poster_item;
         LayoutInflater inflater = LayoutInflater.from(context);
 
         final View view = inflater.inflate(layoutIdForListItem, viewGroup, false);
@@ -73,9 +76,10 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
     @Override
     public void onBindViewHolder(MovieGridAdapterViewHolder holder, int position) {
         Movie movie = mMovieList.get(position);
+        Uri posterPath = NetworkUtils.getTmdbPosterImage(movie.getPoster());
         // load image from web using Picasso
         Picasso.with(mContext)
-                .load(movie.getPoster())
+                .load(posterPath)
                 .placeholder(R.color.colorPrimary)
                 .into(holder.moviePosterImageView);
     }

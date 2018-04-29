@@ -4,15 +4,18 @@ package com.example.android.popularmovies.model;
 // http://mateoj.com/2015/10/06/creating-movies-app-retrofit-picasso-android/
 // http://mateoj.com/2015/10/07/creating-movies-app-retrofit-picass-android-part2/
 
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+@Entity(tableName = "movies")
 public class Movie {
 
-    // The instructions recommended using w185 for the image size but that seems too small
-    private static final String TMDB_IMAGE_PATH = "http://image.tmdb.org/t/p/w342";
-
+    @PrimaryKey
     private int id;
 
     public int getId() {
@@ -23,20 +26,26 @@ public class Movie {
         this.id = id;
     }
 
+    @ColumnInfo
     private String title;
 
+    @ColumnInfo(name = "posterImage")
     @SerializedName("poster_path")
     private String poster;
 
+    @ColumnInfo
     @SerializedName("overview")
     private String description;
 
+    @ColumnInfo(name = "backdrop")
     @SerializedName("backdrop_path")
     private String backdrop;
 
+    @ColumnInfo(name = "vote_average")
     @SerializedName("vote_average")
     private String userRating;
 
+    @ColumnInfo(name = "release_date")
     @SerializedName("release_date")
     private String releaseDate;
 
@@ -64,7 +73,7 @@ public class Movie {
     }
 
     public String getPoster() {
-        return TMDB_IMAGE_PATH + poster;
+        return poster;
     }
 
     public void setPoster(String poster) {

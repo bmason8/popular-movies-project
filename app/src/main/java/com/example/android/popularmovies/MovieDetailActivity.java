@@ -3,6 +3,7 @@ package com.example.android.popularmovies;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -82,11 +83,14 @@ public class MovieDetailActivity extends AppCompatActivity {
     // Image Strings
     String backdropImageUrl, moviePosterImageUrl;
     Uri backdropImageUri, moviePosterImageUri;
+//    Drawable isFavouriteResId = getResources().getDrawable(android.R.drawable.btn_star_big_on);
+//    Drawable notFavouriteResId = getResources().getDrawable(android.R.drawable.btn_star_big_off);
 
     @OnClick(R.id.favourite_btn)
     void markMovieAsFavourite() {
-        markAsFavourite(currentMovie);
-        mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
+//        isMovieInDatabase(currentMovie.getId());
+        DatabaseAsync databaseAsync = new DatabaseAsync();
+        databaseAsync.execute();
     }
 
     @Override
@@ -227,15 +231,97 @@ public class MovieDetailActivity extends AppCompatActivity {
         mVideoListAdapter.setData(mVideoList);
     }
 
-    private void markAsFavourite(Movie movie) {
-        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").allowMainThreadQueries().build();
-        movieDatabase.movieDao().insertSingleMovie(movie);
-        Toast.makeText(getApplicationContext(), "Movie saved to favourites!", Toast.LENGTH_LONG).show();
-    }
+//    private void markAsFavourite(Movie movie) {
+////        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
+////        movieDatabase.movieDao().insertSingleMovie(movie);
+////        Toast.makeText(getApplicationContext(), "Movie saved to favourites!", Toast.LENGTH_LONG).show();
+//        if(isMovieInDatabase(currentMovie.getId())) {
+//            DatabaseAsync databaseAsync = new DatabaseAsync();
+//            databaseAsync.execute();
+//        }
+//
+//    }
 
     private void removeFromFavourites(Movie movie) {
+        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").allowMainThreadQueries().build();
         movieDatabase.movieDao().deleteSingleMovie(movie);
         Toast.makeText(getApplicationContext(), "Movie removed from favourites!", Toast.LENGTH_LONG).show();
+    }
+
+//    private void toggleFavourite(Movie movie) {
+//
+//        markAsFavourite(movie);
+//
+////        Log.d("temp: ", String.valueOf(temp));
+//
+////        if() {
+////            markAsFavourite(movie);
+////            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
+////        } else {
+////            removeFromFavourites(movie);
+////            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
+////        }
+//    }
+
+    public void isMovieInDatabase() {
+
+
+        int movieExists;
+        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
+        movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
+        if (movieExists > 0) {
+            movieDatabase.movieDao().deleteSingleMovie(currentMovie);
+//            Toast.makeText(getApplicationContext(), "Removed from database", Toast.LENGTH_LONG).show();
+        } else {
+            movieDatabase.movieDao().insertSingleMovie(currentMovie);
+//            Toast.makeText(getApplicationContext(), "Saved to Database", Toast.LENGTH_LONG).show();
+        }
+
+
+//        DatabaseAsync databaseAsync = new DatabaseAsync();
+//        databaseAsync.execute();
+
+//        int movieExists;
+//        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").allowMainThreadQueries().build();
+//        movieExists = movieDatabase.movieDao().getSingleMovie(id);
+//        if(movieExists > 0) {
+//            movieDatabase.movieDao().deleteSingleMovie(currentMovie);
+//            Toast.makeText(getApplicationContext(), "Removed from database", Toast.LENGTH_LONG).show();
+//        } else {
+//            DatabaseAsync databaseAsync = new DatabaseAsync();
+//            databaseAsync.execute();
+//        }
+    }
+
+    private class DatabaseAsync extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            isMovieInDatabase();
+
+//            int movieExists;
+//            movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
+//            movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
+//            if(movieExists > 0) {
+//                movieDatabase.movieDao().deleteSingleMovie(currentMovie);
+//                Toast.makeText(getApplicationContext(), "Removed from database", Toast.LENGTH_LONG).show();
+//            } else {
+//                movieDatabase.movieDao().insertSingleMovie(currentMovie);
+//                Toast.makeText(getApplicationContext(), "Saved to Database", Toast.LENGTH_LONG).show();
+//            }
+
+//            movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
+//            movieDatabase.movieDao().insertSingleMovie(currentMovie);
+//
+////            markAsFavourite(currentMovie);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+//            Toast.makeText(getApplicationContext(), "Saved to Database", Toast.LENGTH_LONG).show();
+        }
     }
 
 }

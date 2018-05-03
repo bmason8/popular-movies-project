@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="260dp"
@@ -24,34 +23,3 @@
         android:contentDescription="@string/movie_trailer_image"/>
 
 </LinearLayout>
-
-<!--<android.support.constraint.ConstraintLayout-->
-    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
-    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
-    <!--xmlns:tools="http://schemas.android.com/tools"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="360dp">-->
-
-    <!--<TextView-->
-        <!--android:id="@+id/tv_movie_trailer_list_item"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textAlignment="center"-->
-        <!--android:textSize="20sp"-->
-        <!--android:textStyle="bold|italic"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--tools:text="Trailer Title"/>-->
-
-    <!--<ImageView-->
-        <!--android:id="@+id/img_movie_trailer_list_item"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:contentDescription="@string/movie_trailer_image"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintStart_toStartOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/tv_movie_trailer_list_item"/>-->
-
-<!--</android.support.constraint.ConstraintLayout>-->

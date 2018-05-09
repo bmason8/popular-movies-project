@@ -1,11 +1,19 @@
 package com.example.android.popularmovies.utilities;
 
 import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
+
+import com.example.android.popularmovies.R;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import butterknife.BindView;
+
 public class NetworkUtils {
+
+    @BindView(R.id.favourite_btn)
+    FloatingActionButton mFavourite_btn;
 
     // https://www.themoviedb.org/talk/5451ec02c3a3680245005e3c
     // used for figuring how to build a Youtube url from the TMDB
@@ -62,6 +70,34 @@ public class NetworkUtils {
         return posterUri;
     }
 
-
+//    public class CheckFavouritesStatus extends AsyncTask<Integer, Void, Void> {
+//
+//        private Context mContext;
+//        public CheckFavouritesStatus(Context context) {
+//            mContext = context;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Integer... movieIdInt) {
+//
+//            int movieId = movieIdInt[0];
+//            int movieExists;
+//
+//            MovieDatabase movieDatabase;
+//            movieDatabase = Room.databaseBuilder(mContext, MovieDatabase.class, "movieDatabase").build();
+//            movieExists = movieDatabase.movieDao().getSingleMovie(movieId);
+//            if (movieExists > 0) {
+//                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
+//            } else {
+//                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
+//            }
+//
+//            return null;
+//        }
+//
+//            protected void onPostExecute (Void aVoid){
+//                Toast.makeText(mContext, "Worked", Toast.LENGTH_LONG).show();
+//            }
+//        }
 
 }

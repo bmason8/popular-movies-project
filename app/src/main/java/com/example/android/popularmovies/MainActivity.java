@@ -2,6 +2,7 @@ package com.example.android.popularmovies;
 
 import android.arch.persistence.room.Room;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -35,16 +36,16 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
     private RecyclerView mRecyclerView;
     private MovieGridAdapter mAdapter;
     public static MovieDatabase movieDatabase;
-    final String baseBackDropUrl = "https://image.tmdb.org/t/p/w500";
 
     private List<Movie> mMovieList;
+    List<Movie> movies = new ArrayList<>();
+
+    List<Movie> favouriteMovies = new ArrayList<>();
 
     private static final String API_KEY = BuildConfig.MY_MOVIE_DB_API_KEY;
     private String getParameter;
     private static final String TOP_RATED = "top_rated";
     private static final String MOST_POPULAR = "popular";
-    private static final String VIDEOS = "videos";
-    private static final String REVIEWS = "reviews";
 
 
     @Override
@@ -52,7 +53,8 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").allowMainThreadQueries().build();
+//        CheckForFavourites checkForFavourites = new CheckForFavourites();
+//        checkForFavourites.execute();
 
         getParameter = MOST_POPULAR;
 
@@ -66,26 +68,29 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
 
     private void fetchFavourites() {
 
-        // set a LayoutManager on the RecyclerView
+
+//        List<Movie> tempMovie = CheckForFavourites.execute().get();
+
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         // mRecyclerView.setHasFixedSize(true);
-        // create a new MovieGridAdapter and give it context
         mAdapter = new MovieGridAdapter(this);
-        // set the new MovieGridAdapter on the RecyclerView
         mRecyclerView.setAdapter(mAdapter);
-
-//        mAdapter.setmMovieList(mMovieList);
 
         // set the onClickListener from MovieDetailActivity on the adapter
         mAdapter.MovieGridAdapterClickListener(MainActivity.this);
-        List<Movie> movies = new ArrayList<>();
-        mAdapter.setmMovieList(movies);
+//        List<Movie> movies = new ArrayList<>();
+
+//        mAdapter.setmMovieList(favouriteMovies);
+
+//        CheckForFavourites checkForFavourites = new CheckForFavourites();
+//        checkForFavourites.execute();
+        new CheckForFavourites().execute();
 
         // query the local database for movies and pass them to the mAdapter and mMovieList
-        movies = movieDatabase.movieDao().getMovies();
+//        movies = movieDatabase.movieDao().getMovies();
 
-        mAdapter.setmMovieList(movies);
-        mMovieList = movies;
+//        mAdapter.setmMovieList(favouriteMovies);
+//        mMovieList = favouriteMovies;
 
 
     }
@@ -141,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         intent.putExtra("description", movie.getDescription());
         intent.putExtra("userRating", movie.getUserRating());
         intent.putExtra("releaseDate", movie.getReleaseDate());
+//        intent.putExtra("isFavourite", movie.isFavourite());
 
         startActivity(intent);
     }
@@ -173,4 +179,22 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private class CheckForFavourites extends AsyncTask<Void, Void, List<Movie>> {
+
+        @Override
+        protected List<Movie> doInBackground(Void... params) {
+
+            movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
+            favouriteMovies = movieDatabase.movieDao().getMovies();
+            return favouriteMovies;
+        }
+
+
+        protected void onPostExecute(List<Movie> favouriteMovies) {
+            mAdapter.setmMovieList(favouriteMovies);
+            mMovieList = favouriteMovies;
+        }
+    }
+
 }

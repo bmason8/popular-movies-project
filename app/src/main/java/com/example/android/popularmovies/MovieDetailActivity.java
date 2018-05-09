@@ -58,6 +58,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     // Floating Action Button
     @BindView(R.id.favourite_btn)
     FloatingActionButton mFavourite_btn;
+
     Movie currentMovie = new Movie();
 
     // TextViews
@@ -68,13 +69,15 @@ public class MovieDetailActivity extends AppCompatActivity {
     @BindView(R.id.movie_release_date)
     TextView tvMovieReleaseDate;
 
-//    @BindView(R.id.movie_user_rating)
-//    TextView tvMovieUserRating;
     private static final String API_KEY = BuildConfig.MY_MOVIE_DB_API_KEY;
     private String sMovieUserRating;
     private List<Video> mVideoList = new ArrayList<>();
     private List<Review> mReviewList = new ArrayList<>();
     int movie_id;
+    boolean isFavourite;
+    boolean favouriteStatus;
+
+    int movieExists;
 
     // RecyclerView
     private RecyclerView mRecyclerView;
@@ -86,7 +89,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     @OnClick(R.id.favourite_btn)
     void markMovieAsFavourite() {
-//        isMovieInDatabase(currentMovie.getId());
         DatabaseAsync databaseAsync = new DatabaseAsync();
         databaseAsync.execute();
     }
@@ -104,6 +106,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         initiateReviewListRecyclerView();
         loadMovieTrailers();
         loadReviews();
+
 
         backdropImageUrl = intent.getStringExtra("backdrop");
         backdropImageUri = NetworkUtils.getTmdbBackdropImage(backdropImageUrl);
@@ -125,7 +128,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         tvMovieTitle.setText(intent.getStringExtra("title"));
         tvMovieOverview.setText(intent.getStringExtra("description"));
-//        tvMovieUserRating.setText("Rating: " + intent.getStringExtra("userRating"));
         // For converting a string into a rating...
         // https://stackoverflow.com/questions/16529640/how-to-set-value-to-rating-bar-with-string
         // Aso I wanted a RatingBar but having 10 stars made it hard to tell quickly what the
@@ -134,8 +136,8 @@ public class MovieDetailActivity extends AppCompatActivity {
         float rating = Float.parseFloat(sMovieUserRating);
         rating = (rating / 2);
         mUserRating.setRating(rating);
-//        Log.d("userRating2: ", String.valueOf(rating));
         tvMovieReleaseDate.setText(getString(R.string.released) + intent.getStringExtra("releaseDate"));
+
 
         // build Movie object for inserting into database
         currentMovie.setId(movie_id);
@@ -145,6 +147,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         currentMovie.setDescription(intent.getStringExtra("description"));
         currentMovie.setUserRating(intent.getStringExtra("userRating"));
         currentMovie.setReleaseDate(intent.getStringExtra("releaseDate"));
+
+        CheckFavouritesStatus checkFavouritesStatus = new CheckFavouritesStatus();
+        checkFavouritesStatus.execute();
 
     }
 
@@ -229,18 +234,22 @@ public class MovieDetailActivity extends AppCompatActivity {
         mVideoListAdapter.setData(mVideoList);
     }
 
-    public void isMovieInDatabase() {
+    public void toggleMovieFavourite() {
 
 //        https://android.jlelse.eu/room-store-your-data-c6d49b4d53a3
         int movieExists;
         movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
         movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
         if (movieExists > 0) {
-            movieDatabase.movieDao().deleteSingleMovie(currentMovie);
+            currentMovie.setFavourite(false);
             mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
+            movieDatabase.movieDao().deleteSingleMovie(currentMovie);
+            Log.d("isFavouriteShdBeOff: ", String.valueOf(isFavourite));
         } else {
-            movieDatabase.movieDao().insertSingleMovie(currentMovie);
+            currentMovie.setFavourite(true);
             mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
+            movieDatabase.movieDao().insertSingleMovie(currentMovie);
+            Log.d("isFavouriteShdBeOn: ", String.valueOf(isFavourite));
         }
     }
 
@@ -249,13 +258,40 @@ public class MovieDetailActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            isMovieInDatabase();
+            toggleMovieFavourite();
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             Toast.makeText(getApplicationContext(), "Choice updated", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private class CheckFavouritesStatus extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... aVoid) {
+
+            MovieDatabase movieDatabase;
+            movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
+            movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
+
+            return null;
+        }
+
+        protected void onPostExecute(Void aVoid) {
+            if (movieExists > 0) {
+                favouriteStatus = true;
+            } else {
+                favouriteStatus = false;
+            }
+
+            if (favouriteStatus) {
+                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
+            } else {
+                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
+            }
         }
     }
 

@@ -78,21 +78,6 @@
             app:layout_constraintStart_toEndOf="@+id/movie_poster_image"
             app:layout_constraintTop_toBottomOf="@+id/movie_title"/>
 
-        <!--Left this in because I'm not certain I like the ratingBar. Might revert back to-->
-        <!--text on next phase of the project-->
-
-        <!--<TextView-->
-        <!--android:id="@+id/movie_user_rating"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="16dp"-->
-        <!--android:textSize="16sp"-->
-        <!--android:text="User Rating"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintHorizontal_bias="0.2"-->
-        <!--app:layout_constraintStart_toEndOf="@+id/movie_poster_image"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/movie_title"/>-->
-
         <TextView
             android:id="@+id/movie_release_date"
             android:layout_width="0dp"
@@ -109,15 +94,10 @@
         <TextView
             android:id="@+id/summaryTv"
             style="@style/MovieDetailHeaders"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
             android:text="@string/summary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/movie_poster_image" />
+            app:layout_constraintTop_toBottomOf="@+id/movie_poster_image"/>
 
         <TextView
             android:id="@+id/movie_overview"
@@ -132,13 +112,6 @@
         <TextView
             android:id="@+id/movie_trailer_tv"
             style="@style/MovieDetailHeaders"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:text="@string/trailers"
             app:layout_constraintEnd_toStartOf="@+id/movie_release_date"
             app:layout_constraintStart_toStartOf="parent"
@@ -156,13 +129,6 @@
         <TextView
             android:id="@+id/reviewHeaderTv"
             style="@style/MovieDetailHeaders"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:text="@string/review"
             app:layout_constraintBottom_toTopOf="@+id/rv_movie_reviews"
             app:layout_constraintEnd_toEndOf="parent"
@@ -176,14 +142,27 @@
             android:layout_height="280dp"
             android:layout_marginBottom="8dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/reviewHeaderTv"/>
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="42dp"
+            app:layout_constraintBottom_toBottomOf="@+id/rv_movie_trailers"
+            app:layout_constraintEnd_toEndOf="@+id/rv_movie_trailers"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/rv_movie_trailers"
+            app:layout_constraintTop_toTopOf="@+id/rv_movie_trailers"
+            app:srcCompat="@android:drawable/ic_media_play"/>
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

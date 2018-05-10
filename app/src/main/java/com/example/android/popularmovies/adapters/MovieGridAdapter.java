@@ -81,6 +81,7 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
         Picasso.with(mContext)
                 .load(posterPath)
                 .placeholder(R.color.colorPrimary)
+                .error(R.drawable.no_image_poster)
                 .into(holder.moviePosterImageView);
     }
 

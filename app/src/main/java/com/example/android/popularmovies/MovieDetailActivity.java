@@ -124,6 +124,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         Picasso.with(this)
                 .load(moviePosterImageUri)
                 .placeholder(R.color.colorPrimary)
+                .error(R.drawable.no_image_poster)
                 .into(mMoviePosterImage);
 
         tvMovieTitle.setText(intent.getStringExtra("title"));
@@ -264,7 +265,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            Toast.makeText(getApplicationContext(), "Choice updated", Toast.LENGTH_LONG).show();
         }
     }
 

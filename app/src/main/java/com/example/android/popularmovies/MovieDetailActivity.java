@@ -1,9 +1,9 @@
 package com.example.android.popularmovies;
 
-import android.arch.persistence.room.Room;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -19,7 +19,9 @@ import android.widget.Toast;
 
 import com.example.android.popularmovies.adapters.ReviewListAdapter;
 import com.example.android.popularmovies.adapters.VideoListAdapter;
-import com.example.android.popularmovies.data.MovieDatabase;
+import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.data.MovieContract.MovieDbEntry;
+import com.example.android.popularmovies.data.MovieDbHelper;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.model.Review;
 import com.example.android.popularmovies.model.ReviewListResponse;
@@ -44,7 +46,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MovieDetailActivity extends AppCompatActivity {
 
-    public static MovieDatabase movieDatabase;
+//    MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
+//    SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
 
     // RatingBar
     @BindView(R.id.movie_user_rating)
@@ -89,8 +92,11 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     @OnClick(R.id.favourite_btn)
     void markMovieAsFavourite() {
-        DatabaseAsync databaseAsync = new DatabaseAsync();
-        databaseAsync.execute();
+
+        insertMovieToDatabase();
+
+//        DatabaseAsync databaseAsync = new DatabaseAsync();
+//        databaseAsync.execute();
     }
 
     @Override
@@ -149,8 +155,8 @@ public class MovieDetailActivity extends AppCompatActivity {
         currentMovie.setUserRating(intent.getStringExtra("userRating"));
         currentMovie.setReleaseDate(intent.getStringExtra("releaseDate"));
 
-        CheckFavouritesStatus checkFavouritesStatus = new CheckFavouritesStatus();
-        checkFavouritesStatus.execute();
+//        CheckFavouritesStatus checkFavouritesStatus = new CheckFavouritesStatus();
+//        checkFavouritesStatus.execute();
 
     }
 
@@ -235,64 +241,91 @@ public class MovieDetailActivity extends AppCompatActivity {
         mVideoListAdapter.setData(mVideoList);
     }
 
+    private void insertMovieToDatabase() {
+
+        MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
+        SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(MovieContract.MovieDbEntry.COLUMN_ID_TMDB, currentMovie.getId());
+        contentValues.put(MovieContract.MovieDbEntry.COLUMN_TITLE, currentMovie.getTitle());
+        contentValues.put(MovieContract.MovieDbEntry.COLUMN_POSTER_PATH, currentMovie.getPoster());
+        contentValues.put(MovieContract.MovieDbEntry.COLUMN_OVERVIEW, currentMovie.getDescription());
+        contentValues.put(MovieContract.MovieDbEntry.COLUMN_VOTE_AVERAGE, currentMovie.getUserRating());
+        contentValues.put(MovieContract.MovieDbEntry.COLUMN_BACKDROP_PATH, currentMovie.getBackdrop());
+        contentValues.put(MovieContract.MovieDbEntry.COLUMN_DATE, currentMovie.getReleaseDate());
+        contentValues.put(MovieDbEntry.COLUMN_FAVORITE, currentMovie.isFavourite());
+
+        Toast.makeText(getApplicationContext(), "ranInsert", Toast.LENGTH_LONG).show();
+
+        Uri uri = getContentResolver().insert(MovieContract.MovieDbEntry.CONTENT_URI, contentValues);
+
+        if (uri != null) {
+            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+
+
     public void toggleMovieFavourite() {
 
 //        https://android.jlelse.eu/room-store-your-data-c6d49b4d53a3
-        int movieExists;
-        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
-        movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
-        if (movieExists > 0) {
-            currentMovie.setFavourite(false);
-            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
-            movieDatabase.movieDao().deleteSingleMovie(currentMovie);
-            Log.d("isFavouriteShdBeOff: ", String.valueOf(isFavourite));
-        } else {
-            currentMovie.setFavourite(true);
-            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
-            movieDatabase.movieDao().insertSingleMovie(currentMovie);
-            Log.d("isFavouriteShdBeOn: ", String.valueOf(isFavourite));
-        }
-    }
+//        int movieExists;
+//        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
+//        movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
+//        if (movieExists > 0) {
+//            currentMovie.setFavourite(false);
+//            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
+//            movieDatabase.movieDao().deleteSingleMovie(currentMovie);
+//            Log.d("isFavouriteShdBeOff: ", String.valueOf(isFavourite));
+//        } else {
+//            currentMovie.setFavourite(true);
+//            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
+//            movieDatabase.movieDao().insertSingleMovie(currentMovie);
+//            Log.d("isFavouriteShdBeOn: ", String.valueOf(isFavourite));
+//        }
+//    }
 
-    private class DatabaseAsync extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            toggleMovieFavourite();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-        }
-    }
-
-    private class CheckFavouritesStatus extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... aVoid) {
-
-            MovieDatabase movieDatabase;
-            movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
-            movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
-
-            return null;
-        }
-
-        protected void onPostExecute(Void aVoid) {
-            if (movieExists > 0) {
-                favouriteStatus = true;
-            } else {
-                favouriteStatus = false;
-            }
-
-            if (favouriteStatus) {
-                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
-            } else {
-                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
-            }
-        }
+//    private class DatabaseAsync extends AsyncTask<Void, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//
+//            toggleMovieFavourite();
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//        }
+//    }
+//
+//    private class CheckFavouritesStatus extends AsyncTask<Void, Void, Void> {
+//
+//        @Override
+//        protected Void doInBackground(Void... aVoid) {
+//
+//            MovieDatabase movieDatabase;
+//            movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
+//            movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
+//
+//            return null;
+//        }
+//
+//        protected void onPostExecute(Void aVoid) {
+//            if (movieExists > 0) {
+//                favouriteStatus = true;
+//            } else {
+//                favouriteStatus = false;
+//            }
+//
+//            if (favouriteStatus) {
+//                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
+//            } else {
+//                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
+//            }
+//        }
     }
 
 }

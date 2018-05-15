@@ -1,9 +1,9 @@
 package com.example.android.popularmovies;
 
-import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.example.android.popularmovies.adapters.MovieGridAdapter;
 import com.example.android.popularmovies.adapters.MovieGridAdapter.MovieGridAdapterOnClickHandler;
-import com.example.android.popularmovies.data.MovieDatabase;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.model.Movie.MovieResult;
 import com.example.android.popularmovies.utilities.ApiInterface;
@@ -35,7 +34,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements MovieGridAdapterOnClickHandler {
     private RecyclerView mRecyclerView;
     private MovieGridAdapter mAdapter;
-    public static MovieDatabase movieDatabase;
 
     private List<Movie> mMovieList;
     List<Movie> movies = new ArrayList<>();
@@ -121,10 +119,15 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
 
         call.enqueue(new Callback<MovieResult>() {
             @Override
-            public void onResponse(Call<Movie.MovieResult> call, Response<MovieResult> response) {
+            public void onResponse(@NonNull Call<Movie.MovieResult> call, @NonNull Response<MovieResult> response) {
                 Movie.MovieResult result = response.body();
-                mAdapter.setmMovieList(result.getResults());
-                mMovieList = result.getResults();
+                if (result != null) {
+                    mAdapter.setmMovieList(result.getResults());
+                    mMovieList = result.getResults();
+                } else {
+                    Log.d("failed", "nothing");
+                }
+
             }
 
             @Override
@@ -146,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         intent.putExtra("description", movie.getDescription());
         intent.putExtra("userRating", movie.getUserRating());
         intent.putExtra("releaseDate", movie.getReleaseDate());
-//        intent.putExtra("isFavourite", movie.isFavourite());
 
         startActivity(intent);
     }
@@ -184,9 +186,7 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
 
         @Override
         protected List<Movie> doInBackground(Void... params) {
-
-            movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
-            favouriteMovies = movieDatabase.movieDao().getMovies();
+            // Need to figure out how to get data from the Database using new way
             return favouriteMovies;
         }
 

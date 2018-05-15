@@ -4,19 +4,19 @@
 
     <item
         android:id="@+id/settings_top_rated"
-        android:orderInCategory="2"
+        android:orderInCategory="3"
         app:showAsAction="ifRoom"
         android:title="@string/top_rated"/>
 
     <item
         android:id="@+id/settings_most_popular"
-        android:orderInCategory="3"
+        android:orderInCategory="1"
         app:showAsAction="ifRoom"
         android:title="@string/most_popular"/>
 
     <item
         android:id="@+id/settings_favourites"
-        android:orderInCategory="1"
+        android:orderInCategory="2"
         android:title="@string/settings_favourites"
         app:showAsAction="ifRoom"/>
 

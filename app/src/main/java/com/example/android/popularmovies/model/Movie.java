@@ -4,18 +4,12 @@ package com.example.android.popularmovies.model;
 // http://mateoj.com/2015/10/06/creating-movies-app-retrofit-picasso-android/
 // http://mateoj.com/2015/10/07/creating-movies-app-retrofit-picass-android-part2/
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-@Entity(tableName = "movies")
 public class Movie {
 
-    @PrimaryKey
     private int id;
 
     public int getId() {
@@ -26,30 +20,23 @@ public class Movie {
         this.id = id;
     }
 
-    @ColumnInfo
     private String title;
 
-    @ColumnInfo(name = "posterImage")
     @SerializedName("poster_path")
     private String poster;
 
-    @ColumnInfo
     @SerializedName("overview")
     private String description;
 
-    @ColumnInfo(name = "backdrop")
     @SerializedName("backdrop_path")
     private String backdrop;
 
-    @ColumnInfo(name = "vote_average")
     @SerializedName("vote_average")
     private String userRating;
 
-    @ColumnInfo(name = "release_date")
     @SerializedName("release_date")
     private String releaseDate;
 
-    @ColumnInfo(name = "isFavourite")
     private boolean isFavourite;
 
     public boolean isFavourite() {

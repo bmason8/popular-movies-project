@@ -37,13 +37,13 @@ public class Movie {
     @SerializedName("release_date")
     private String releaseDate;
 
-    private boolean isFavourite;
+    private int isFavourite;
 
-    public boolean isFavourite() {
+    public int isFavourite() {
         return isFavourite;
     }
 
-    public void setFavourite(boolean favourite) {
+    public void setFavourite(int favourite) {
         isFavourite = favourite;
     }
 

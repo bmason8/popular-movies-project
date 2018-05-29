@@ -1,7 +1,8 @@
 package com.example.android.popularmovies;
 
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -13,8 +14,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.adapters.FavouriteMoviesAdapter;
 import com.example.android.popularmovies.adapters.MovieGridAdapter;
 import com.example.android.popularmovies.adapters.MovieGridAdapter.MovieGridAdapterOnClickHandler;
+import com.example.android.popularmovies.data.MovieContract.MovieDbEntry;
+import com.example.android.popularmovies.data.MovieDbHelper;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.model.Movie.MovieResult;
 import com.example.android.popularmovies.utilities.ApiInterface;
@@ -34,9 +38,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements MovieGridAdapterOnClickHandler {
     private RecyclerView mRecyclerView;
     private MovieGridAdapter mAdapter;
+    List<Movie> favMovies = new ArrayList<>();
+    private FavouriteMoviesAdapter mFavouritesAdapter;
 
     private List<Movie> mMovieList;
     List<Movie> movies = new ArrayList<>();
+    private SQLiteDatabase mDb;
 
     List<Movie> favouriteMovies = new ArrayList<>();
 
@@ -45,11 +52,13 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
     private static final String TOP_RATED = "top_rated";
     private static final String MOST_POPULAR = "popular";
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
+        mDb = mMovieDbHelper.getWritableDatabase();
 
 //        CheckForFavourites checkForFavourites = new CheckForFavourites();
 //        checkForFavourites.execute();
@@ -66,29 +75,35 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
 
     private void fetchFavourites() {
 
-
-//        List<Movie> tempMovie = CheckForFavourites.execute().get();
+        favMovies = getAllFavouriteMovies();
 
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         // mRecyclerView.setHasFixedSize(true);
+        // create a new MovieGridAdapter and give it context
         mAdapter = new MovieGridAdapter(this);
+        // set the new MovieGridAdapter on the RecyclerView
         mRecyclerView.setAdapter(mAdapter);
-
         // set the onClickListener from MovieDetailActivity on the adapter
         mAdapter.MovieGridAdapterClickListener(MainActivity.this);
-//        List<Movie> movies = new ArrayList<>();
 
-//        mAdapter.setmMovieList(favouriteMovies);
+        mAdapter.setmMovieList(favMovies);
 
-//        CheckForFavourites checkForFavourites = new CheckForFavourites();
-//        checkForFavourites.execute();
-        new CheckForFavourites().execute();
 
-        // query the local database for movies and pass them to the mAdapter and mMovieList
-//        movies = movieDatabase.movieDao().getMovies();
+        // was kind of working
+//        Cursor cursor = getAllFavouriteMovies();
+//
+//        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+//        mFavouritesAdapter = new FavouriteMoviesAdapter(this, cursor);
+//        mRecyclerView.setAdapter(mFavouritesAdapter);
+//        mFavouritesAdapter.swapCursor(getAllFavouriteMovies());
 
-//        mAdapter.setmMovieList(favouriteMovies);
-//        mMovieList = favouriteMovies;
+//        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+//        // mRecyclerView.setHasFixedSize(true);
+//        mAdapter = new MovieGridAdapter(this);
+//        mRecyclerView.setAdapter(mAdapter);
+//
+//        // set the onClickListener from MovieDetailActivity on the adapter
+//        mAdapter.MovieGridAdapterClickListener(MainActivity.this);
 
 
     }
@@ -182,19 +197,92 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         }
     }
 
-    private class CheckForFavourites extends AsyncTask<Void, Void, List<Movie>> {
+    // https://www.youtube.com/watch?v=JJqVPKrL2e8&index=7&list=PLvPqrYVmSBHf3KhSUP8xHHcN5aMeGsWBl
+    private List<Movie> getAllFavouriteMovies() {
+        mMovieList.clear();
+        String[] columns = {
+                MovieDbEntry.COLUMN_ID_TMDB,
+                MovieDbEntry.COLUMN_TITLE,
+                MovieDbEntry.COLUMN_POSTER_PATH,
+                MovieDbEntry.COLUMN_OVERVIEW,
+                MovieDbEntry.COLUMN_VOTE_AVERAGE,
+                MovieDbEntry.COLUMN_BACKDROP_PATH,
+                MovieDbEntry.COLUMN_DATE,
+                MovieDbEntry.COLUMN_FAVORITE,
+        };
 
-        @Override
-        protected List<Movie> doInBackground(Void... params) {
-            // Need to figure out how to get data from the Database using new way
-            return favouriteMovies;
+        String sortOrder = MovieDbEntry._ID;
+//        List<Movie> favouriteMovies = new ArrayList<>();
+
+        MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
+        SQLiteDatabase db = mMovieDbHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(MovieDbEntry.TABLE_NAME,
+                columns,
+                null,
+                null,
+                null,
+                null,
+                sortOrder);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Movie movie = new Movie();
+                movie.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(MovieDbEntry.COLUMN_ID_TMDB))));
+                movie.setTitle(cursor.getString(cursor.getColumnIndex(MovieDbEntry.COLUMN_TITLE)));
+                movie.setPoster(cursor.getString(cursor.getColumnIndex(MovieDbEntry.COLUMN_POSTER_PATH)));
+                movie.setDescription(cursor.getString(cursor.getColumnIndex(MovieDbEntry.COLUMN_OVERVIEW)));
+                movie.setUserRating(cursor.getString(cursor.getColumnIndex(MovieDbEntry.COLUMN_VOTE_AVERAGE)));
+                movie.setBackdrop(cursor.getString(cursor.getColumnIndex(MovieDbEntry.COLUMN_BACKDROP_PATH)));
+                movie.setReleaseDate(cursor.getString(cursor.getColumnIndex(MovieDbEntry.COLUMN_DATE)));
+                movie.setFavourite(cursor.getInt(cursor.getColumnIndex(MovieDbEntry.COLUMN_FAVORITE)));
+
+                mMovieList.add(movie);
+            } while (cursor.moveToNext());
         }
+        cursor.close();
+        db.close();
 
+        return mMovieList;
 
-        protected void onPostExecute(List<Movie> favouriteMovies) {
-            mAdapter.setmMovieList(favouriteMovies);
-            mMovieList = favouriteMovies;
-        }
+//        return mDb.query(
+//                MovieDbEntry.TABLE_NAME,
+//                null,
+//                null,
+//                null,
+//                null,
+//                null,
+//                MovieDbEntry.COLUMN_ID_TMDB
+//        );
     }
+
+
+//    private class CheckForFavourites extends AsyncTask<Void, Void, List<Movie>> {
+//
+//        @Override
+//        protected List<Movie> doInBackground(Void... params) {
+//            // Need to figure out how to get data from the Database using new way
+//
+//            private Cursor getAllFavourites() {
+//                return mDb.query(
+//                        MovieDbEntry.TABLE_NAME,
+//                        null,
+//                        null,
+//                        null,
+//                        null,
+//                        null,
+//                        MovieDbEntry.COLUMN_ID_TMDB
+//                );
+//            }
+//
+//            return Cursor;
+//        }
+//
+//
+//        protected void onPostExecute(List<Movie> favouriteMovies) {
+//            mAdapter.setmMovieList(favouriteMovies);
+//            mMovieList = favouriteMovies;
+//        }
+//    }
 
 }

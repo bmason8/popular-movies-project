@@ -2,9 +2,11 @@ package com.example.android.popularmovies;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -94,6 +96,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     void markMovieAsFavourite() {
 
         insertMovieToDatabase();
+//        deleteMovieFromDatabase(movie_id);
 
 //        DatabaseAsync databaseAsync = new DatabaseAsync();
 //        databaseAsync.execute();
@@ -158,7 +161,11 @@ public class MovieDetailActivity extends AppCompatActivity {
 //        CheckFavouritesStatus checkFavouritesStatus = new CheckFavouritesStatus();
 //        checkFavouritesStatus.execute();
 
+        SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//        mFavourite_btn.
+
     }
+
 
     private void loadMovieTrailers(){
         Retrofit retrofit = new Retrofit.Builder()
@@ -266,9 +273,28 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
     }
 
+    private void deleteMovieFromDatabase(int id) {
+        MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
+        SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
+        db.delete(MovieDbEntry.TABLE_NAME, MovieDbEntry.COLUMN_ID_TMDB + '=' + id, null);
+
+//        String selection = MovieContract.MovieDbEntry.COLUMN_ID_TMDB + "= ?";
+//        String[] selectionArgs = {String.valueOf(currentMovie.getId())};
+
+//        String stringId = Integer.toString(currentMovie.getId());
+//        Uri uri = MovieDbEntry.CONTENT_URI;
+//        uri = uri.buildUpon().appendPath(stringId).build();
+//
+//        getContentResolver().delete(uri, null, null);
+
+    }
+
 
 
     public void toggleMovieFavourite() {
+
+        int movieExists;
+
 
 //        https://android.jlelse.eu/room-store-your-data-c6d49b4d53a3
 //        int movieExists;

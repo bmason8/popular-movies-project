@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <!--https://stackoverflow.com/questions/38799535/how-to-change-inactive-color-on-bottom-navigation-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" android:color="@color/colorAccent"/>
+    <item android:color="@android:color/white" />
+</selector>

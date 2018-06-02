@@ -37,16 +37,6 @@ public class Movie {
     @SerializedName("release_date")
     private String releaseDate;
 
-    private int isFavourite;
-
-    public int isFavourite() {
-        return isFavourite;
-    }
-
-    public void setFavourite(int favourite) {
-        isFavourite = favourite;
-    }
-
     private String trailers;
 
     //Getter and Setters
@@ -106,14 +96,6 @@ public class Movie {
     public void setTrailers(String trailers) {
         this.trailers = trailers;
     }
-
-//    public boolean isFavourite() {
-//        return isFavourite;
-//    }
-//
-//    public void setFavourite(boolean favourite) {
-//        isFavourite = favourite;
-//    }
 
     public static class MovieResult {
         private List<Movie> results;

@@ -2,13 +2,13 @@ package com.example.android.popularmovies;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,11 +45,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-
 public class MovieDetailActivity extends AppCompatActivity {
-
-//    MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
-//    SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
 
     // RatingBar
     @BindView(R.id.movie_user_rating)
@@ -79,10 +75,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     private List<Video> mVideoList = new ArrayList<>();
     private List<Review> mReviewList = new ArrayList<>();
     int movie_id;
-    boolean isFavourite;
-    boolean favouriteStatus;
-
-    int movieExists;
+    int isFavourite = 0;
 
     // RecyclerView
     private RecyclerView mRecyclerView;
@@ -95,11 +88,15 @@ public class MovieDetailActivity extends AppCompatActivity {
     @OnClick(R.id.favourite_btn)
     void markMovieAsFavourite() {
 
-        insertMovieToDatabase();
-//        deleteMovieFromDatabase(movie_id);
+        if (isFavourite == 0) {
+            isFavourite = 1;
+            insertMovieToDatabase();
+        } else {
+            isFavourite = 0;
+            deleteMovieFromDatabase(movie_id);
+        }
 
-//        DatabaseAsync databaseAsync = new DatabaseAsync();
-//        databaseAsync.execute();
+        toggleFavouriteButton();
     }
 
     @Override
@@ -115,7 +112,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         initiateReviewListRecyclerView();
         loadMovieTrailers();
         loadReviews();
-
 
         backdropImageUrl = intent.getStringExtra("backdrop");
         backdropImageUri = NetworkUtils.getTmdbBackdropImage(backdropImageUrl);
@@ -158,12 +154,8 @@ public class MovieDetailActivity extends AppCompatActivity {
         currentMovie.setUserRating(intent.getStringExtra("userRating"));
         currentMovie.setReleaseDate(intent.getStringExtra("releaseDate"));
 
-//        CheckFavouritesStatus checkFavouritesStatus = new CheckFavouritesStatus();
-//        checkFavouritesStatus.execute();
-
-        SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//        mFavourite_btn.
-
+        checkIfFavourite();
+        toggleFavouriteButton();
     }
 
 
@@ -254,7 +246,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-
         contentValues.put(MovieContract.MovieDbEntry.COLUMN_ID_TMDB, currentMovie.getId());
         contentValues.put(MovieContract.MovieDbEntry.COLUMN_TITLE, currentMovie.getTitle());
         contentValues.put(MovieContract.MovieDbEntry.COLUMN_POSTER_PATH, currentMovie.getPoster());
@@ -262,96 +253,115 @@ public class MovieDetailActivity extends AppCompatActivity {
         contentValues.put(MovieContract.MovieDbEntry.COLUMN_VOTE_AVERAGE, currentMovie.getUserRating());
         contentValues.put(MovieContract.MovieDbEntry.COLUMN_BACKDROP_PATH, currentMovie.getBackdrop());
         contentValues.put(MovieContract.MovieDbEntry.COLUMN_DATE, currentMovie.getReleaseDate());
-        contentValues.put(MovieDbEntry.COLUMN_FAVORITE, currentMovie.isFavourite());
-
-        Toast.makeText(getApplicationContext(), "ranInsert", Toast.LENGTH_LONG).show();
 
         Uri uri = getContentResolver().insert(MovieContract.MovieDbEntry.CONTENT_URI, contentValues);
 
         if (uri != null) {
-            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Movie added to favourites!", Snackbar.LENGTH_LONG);
+            snackbar.show();
         }
+        db.close();
     }
 
     private void deleteMovieFromDatabase(int id) {
         MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
         SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
+
         db.delete(MovieDbEntry.TABLE_NAME, MovieDbEntry.COLUMN_ID_TMDB + '=' + id, null);
 
-//        String selection = MovieContract.MovieDbEntry.COLUMN_ID_TMDB + "= ?";
-//        String[] selectionArgs = {String.valueOf(currentMovie.getId())};
+        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Movie removed from favourites", Snackbar.LENGTH_LONG);
+        snackbar.show();
 
-//        String stringId = Integer.toString(currentMovie.getId());
-//        Uri uri = MovieDbEntry.CONTENT_URI;
-//        uri = uri.buildUpon().appendPath(stringId).build();
-//
-//        getContentResolver().delete(uri, null, null);
+        db.close();
+    }
 
+    private void toggleFavouriteButton() {
+        if (isFavourite == 1) {
+            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
+        } else {
+            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
+        }
+    }
+
+
+    private void checkIfFavourite() {
+        int currentMovieId;
+        if (currentMovie == null) {
+            return;
+        }
+
+        String[] columns = {
+                MovieDbEntry.COLUMN_ID_TMDB,
+                MovieDbEntry.COLUMN_TITLE,
+                MovieDbEntry.COLUMN_POSTER_PATH,
+                MovieDbEntry.COLUMN_OVERVIEW,
+                MovieDbEntry.COLUMN_VOTE_AVERAGE,
+                MovieDbEntry.COLUMN_BACKDROP_PATH,
+                MovieDbEntry.COLUMN_DATE,
+                MovieDbEntry.COLUMN_FAVORITE,
+        };
+
+        String sortOrder = MovieDbEntry._ID;
+        MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
+        SQLiteDatabase db = mMovieDbHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(MovieDbEntry.TABLE_NAME,
+                columns,
+                null,
+                null,
+                null,
+                null,
+                sortOrder);
+
+        if (cursor.moveToFirst()) {
+            do {
+                currentMovieId = Integer.parseInt(cursor.getString(cursor.getColumnIndex(MovieDbEntry.COLUMN_ID_TMDB)));
+                if (currentMovieId == movie_id) {
+                    isFavourite = 1;
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
     }
 
 
 
-    public void toggleMovieFavourite() {
 
-        int movieExists;
-
-
-//        https://android.jlelse.eu/room-store-your-data-c6d49b4d53a3
+//    public void toggleMovieFavourite() {
+//
 //        int movieExists;
-//        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
-//        movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
-//        if (movieExists > 0) {
-//            currentMovie.setFavourite(false);
-//            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
-//            movieDatabase.movieDao().deleteSingleMovie(currentMovie);
-//            Log.d("isFavouriteShdBeOff: ", String.valueOf(isFavourite));
-//        } else {
-//            currentMovie.setFavourite(true);
-//            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
-//            movieDatabase.movieDao().insertSingleMovie(currentMovie);
-//            Log.d("isFavouriteShdBeOn: ", String.valueOf(isFavourite));
-//        }
-//    }
-
-//    private class DatabaseAsync extends AsyncTask<Void, Void, Void> {
 //
-//        @Override
-//        protected Void doInBackground(Void... voids) {
 //
-//            toggleMovieFavourite();
-//            return null;
-//        }
+////        https://android.jlelse.eu/room-store-your-data-c6d49b4d53a3
+////        int movieExists;
+////        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
+////        movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
+////        if (movieExists > 0) {
+////            currentMovie.setFavourite(false);
+////            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
+////            movieDatabase.movieDao().deleteSingleMovie(currentMovie);
+////            Log.d("isFavouriteShdBeOff: ", String.valueOf(isFavourite));
+////        } else {
+////            currentMovie.setFavourite(true);
+////            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
+////            movieDatabase.movieDao().insertSingleMovie(currentMovie);
+////            Log.d("isFavouriteShdBeOn: ", String.valueOf(isFavourite));
+////        }
+////    }
 //
-//        @Override
-//        protected void onPostExecute(Void aVoid) {
-//        }
-//    }
-//
-//    private class CheckFavouritesStatus extends AsyncTask<Void, Void, Void> {
-//
-//        @Override
-//        protected Void doInBackground(Void... aVoid) {
-//
-//            MovieDatabase movieDatabase;
-//            movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
-//            movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
-//
-//            return null;
-//        }
-//
-//        protected void onPostExecute(Void aVoid) {
-//            if (movieExists > 0) {
-//                favouriteStatus = true;
-//            } else {
-//                favouriteStatus = false;
-//            }
-//
-//            if (favouriteStatus) {
-//                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
-//            } else {
-//                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
-//            }
-//        }
-    }
+////    private class DatabaseAsync extends AsyncTask<Void, Void, Void> {
+////
+////        @Override
+////        protected Void doInBackground(Void... voids) {
+////
+////            toggleMovieFavourite();
+////            return null;
+////        }
+////
+////        @Override
+////        protected void onPostExecute(Void aVoid) {
+////        }
+////    }
 
 }

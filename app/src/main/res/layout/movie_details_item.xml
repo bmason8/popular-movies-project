@@ -50,8 +50,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@android:drawable/btn_star_big_off"/>
 
-        <!--<ToggleButton android:layout_width="60dp" android:layout_height="60dp"/>-->
-
 
         <TextView
             android:id="@+id/movie_title"

@@ -5,16 +5,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.BottomNavigationView.OnNavigationItemSelectedListener;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.example.android.popularmovies.adapters.FavouriteMoviesAdapter;
 import com.example.android.popularmovies.adapters.MovieGridAdapter;
 import com.example.android.popularmovies.adapters.MovieGridAdapter.MovieGridAdapterOnClickHandler;
 import com.example.android.popularmovies.data.MovieContract.MovieDbEntry;
@@ -38,167 +37,121 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements MovieGridAdapterOnClickHandler {
     private RecyclerView mRecyclerView;
     private MovieGridAdapter mAdapter;
-    List<Movie> favMovies = new ArrayList<>();
-    private FavouriteMoviesAdapter mFavouritesAdapter;
 
     private List<Movie> mMovieList;
-    List<Movie> movies = new ArrayList<>();
-    private SQLiteDatabase mDb;
-
-    List<Movie> favouriteMovies = new ArrayList<>();
+    private SQLiteDatabase db;
 
     private static final String API_KEY = BuildConfig.MY_MOVIE_DB_API_KEY;
     private String getParameter;
     private static final String TOP_RATED = "top_rated";
     private static final String MOST_POPULAR = "popular";
+    private static final String FAVOURITES = "favourites";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
-        mDb = mMovieDbHelper.getWritableDatabase();
+        // https://www.youtube.com/watch?v=wcE7IIHKfRg
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
 
-//        CheckForFavourites checkForFavourites = new CheckForFavourites();
-//        checkForFavourites.execute();
+                    case R.id.settings_top_rated:
+                        getParameter = TOP_RATED;
+                        fetchMovieList(getParameter);
+                        return true;
+
+                    case R.id.settings_most_popular:
+                        getParameter = MOST_POPULAR;
+                        fetchMovieList(getParameter);
+                        return true;
+                    case R.id.settings_favourites:
+                        getParameter = FAVOURITES;
+                        fetchMovieList(getParameter);
+                        return true;
+                }
+                return true;
+            }
+        });
 
         getParameter = MOST_POPULAR;
-
         mMovieList = new ArrayList<>();
-
         mRecyclerView = findViewById(R.id.rv_movie_posters);
-
         fetchMovieList(getParameter);
-
+        // https://stackoverflow.com/questions/40236786/set-initially-selected-item-index-id-in-bottomnavigationview/43278541
+        bottomNavigationView.setSelectedItemId(R.id.settings_most_popular);
     }
 
-    private void fetchFavourites() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fetchMovieList(getParameter);
+    }
 
-        favMovies = getAllFavouriteMovies();
-
+    private void setUpRecyclerViewAndAdapters() {
+        // set a LayoutManager on the RecyclerView
         mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        // mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(true);
         // create a new MovieGridAdapter and give it context
         mAdapter = new MovieGridAdapter(this);
         // set the new MovieGridAdapter on the RecyclerView
         mRecyclerView.setAdapter(mAdapter);
         // set the onClickListener from MovieDetailActivity on the adapter
         mAdapter.MovieGridAdapterClickListener(MainActivity.this);
-
-        mAdapter.setmMovieList(favMovies);
-
-
-        // was kind of working
-//        Cursor cursor = getAllFavouriteMovies();
-//
-//        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-//        mFavouritesAdapter = new FavouriteMoviesAdapter(this, cursor);
-//        mRecyclerView.setAdapter(mFavouritesAdapter);
-//        mFavouritesAdapter.swapCursor(getAllFavouriteMovies());
-
-//        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-//        // mRecyclerView.setHasFixedSize(true);
-//        mAdapter = new MovieGridAdapter(this);
-//        mRecyclerView.setAdapter(mAdapter);
-//
-//        // set the onClickListener from MovieDetailActivity on the adapter
-//        mAdapter.MovieGridAdapterClickListener(MainActivity.this);
-
-
+        mAdapter.setmMovieList(mMovieList);
     }
 
     private void fetchMovieList(String getParameter) {
-        // set a LayoutManager on the RecyclerView
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        // mRecyclerView.setHasFixedSize(true);
-        // create a new MovieGridAdapter and give it context
-        mAdapter = new MovieGridAdapter(this);
-        // set the new MovieGridAdapter on the RecyclerView
-        mRecyclerView.setAdapter(mAdapter);
-        // set the onClickListener from MovieDetailActivity on the adapter
-        mAdapter.MovieGridAdapterClickListener(MainActivity.this);
-        List<Movie> movies = new ArrayList<>();
-        mAdapter.setmMovieList(movies);
 
-        // Retrofit
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ApiInterface.MOVIE_DB_BASE_MOVIE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        setUpRecyclerViewAndAdapters();
 
-        ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+        if (getParameter == FAVOURITES) {
+            mMovieList = getAllFavouriteMovies();
+            mAdapter.setmMovieList(mMovieList);
+        } else {
 
-        Call<MovieResult> call = apiInterface.getMovieResults(getParameter, API_KEY);
-        Log.d("call ", call.toString());
+            // Retrofit
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(ApiInterface.MOVIE_DB_BASE_MOVIE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-        call.enqueue(new Callback<MovieResult>() {
-            @Override
-            public void onResponse(@NonNull Call<Movie.MovieResult> call, @NonNull Response<MovieResult> response) {
-                Movie.MovieResult result = response.body();
-                if (result != null) {
-                    mAdapter.setmMovieList(result.getResults());
-                    mMovieList = result.getResults();
-                } else {
-                    Log.d("failed", "nothing");
+            ApiInterface apiInterface = retrofit.create(ApiInterface.class);
+
+            Call<MovieResult> call = apiInterface.getMovieResults(getParameter, API_KEY);
+            Log.d("call ", call.toString());
+
+            call.enqueue(new Callback<MovieResult>() {
+                @Override
+                public void onResponse(@NonNull Call<Movie.MovieResult> call, @NonNull Response<MovieResult> response) {
+                    Movie.MovieResult result = response.body();
+                    if (result != null) {
+                        mAdapter.setmMovieList(result.getResults());
+                        mMovieList = result.getResults();
+                    } else {
+                        Log.d("failed", "nothing");
+                        Toast.makeText(MainActivity.this, "Failed to fetch Movies", Toast.LENGTH_LONG).show();
+                    }
                 }
 
-            }
-
-            @Override
-            public void onFailure(Call<Movie.MovieResult> call, Throwable t) {
-                Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                Log.d("Fail: ", t.getMessage());
-            }
-        });
-    }
-
-    @Override
-    public void onItemClick(int position) {
-        Movie movie = mMovieList.get(position);
-        Intent intent = new Intent(this, MovieDetailActivity.class);
-        intent.putExtra("id", movie.getId());
-        intent.putExtra("posterImage", movie.getPoster());
-        intent.putExtra("backdrop", movie.getBackdrop());
-        intent.putExtra("title", movie.getTitle());
-        intent.putExtra("description", movie.getDescription());
-        intent.putExtra("userRating", movie.getUserRating());
-        intent.putExtra("releaseDate", movie.getReleaseDate());
-
-        startActivity(intent);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            case R.id.settings_top_rated:
-                getParameter = TOP_RATED;
-                fetchMovieList(getParameter);
-                return true;
-
-            case R.id.settings_most_popular:
-                getParameter = MOST_POPULAR;
-                fetchMovieList(getParameter);
-                return true;
-            case R.id.settings_favourites:
-                fetchFavourites();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+                @Override
+                public void onFailure(Call<Movie.MovieResult> call, Throwable t) {
+                    Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.d("Fail: ", t.getMessage());
+                }
+            });
         }
     }
 
     // https://www.youtube.com/watch?v=JJqVPKrL2e8&index=7&list=PLvPqrYVmSBHf3KhSUP8xHHcN5aMeGsWBl
     private List<Movie> getAllFavouriteMovies() {
+
+        MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
+        db = mMovieDbHelper.getWritableDatabase();
+
         mMovieList.clear();
         String[] columns = {
                 MovieDbEntry.COLUMN_ID_TMDB,
@@ -212,10 +165,6 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         };
 
         String sortOrder = MovieDbEntry._ID;
-//        List<Movie> favouriteMovies = new ArrayList<>();
-
-        MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
-        SQLiteDatabase db = mMovieDbHelper.getReadableDatabase();
 
         Cursor cursor = db.query(MovieDbEntry.TABLE_NAME,
                 columns,
@@ -235,7 +184,6 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
                 movie.setUserRating(cursor.getString(cursor.getColumnIndex(MovieDbEntry.COLUMN_VOTE_AVERAGE)));
                 movie.setBackdrop(cursor.getString(cursor.getColumnIndex(MovieDbEntry.COLUMN_BACKDROP_PATH)));
                 movie.setReleaseDate(cursor.getString(cursor.getColumnIndex(MovieDbEntry.COLUMN_DATE)));
-                movie.setFavourite(cursor.getInt(cursor.getColumnIndex(MovieDbEntry.COLUMN_FAVORITE)));
 
                 mMovieList.add(movie);
             } while (cursor.moveToNext());
@@ -244,45 +192,20 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
         db.close();
 
         return mMovieList;
-
-//        return mDb.query(
-//                MovieDbEntry.TABLE_NAME,
-//                null,
-//                null,
-//                null,
-//                null,
-//                null,
-//                MovieDbEntry.COLUMN_ID_TMDB
-//        );
     }
 
+    @Override
+    public void onItemClick(int position) {
+        Movie movie = mMovieList.get(position);
+        Intent intent = new Intent(this, MovieDetailActivity.class);
+        intent.putExtra("id", movie.getId());
+        intent.putExtra("posterImage", movie.getPoster());
+        intent.putExtra("backdrop", movie.getBackdrop());
+        intent.putExtra("title", movie.getTitle());
+        intent.putExtra("description", movie.getDescription());
+        intent.putExtra("userRating", movie.getUserRating());
+        intent.putExtra("releaseDate", movie.getReleaseDate());
 
-//    private class CheckForFavourites extends AsyncTask<Void, Void, List<Movie>> {
-//
-//        @Override
-//        protected List<Movie> doInBackground(Void... params) {
-//            // Need to figure out how to get data from the Database using new way
-//
-//            private Cursor getAllFavourites() {
-//                return mDb.query(
-//                        MovieDbEntry.TABLE_NAME,
-//                        null,
-//                        null,
-//                        null,
-//                        null,
-//                        null,
-//                        MovieDbEntry.COLUMN_ID_TMDB
-//                );
-//            }
-//
-//            return Cursor;
-//        }
-//
-//
-//        protected void onPostExecute(List<Movie> favouriteMovies) {
-//            mAdapter.setmMovieList(favouriteMovies);
-//            mMovieList = favouriteMovies;
-//        }
-//    }
-
+        startActivity(intent);
+    }
 }

@@ -27,8 +27,6 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
     private final List<Movie> mMovieList;
     private MovieGridAdapterOnClickHandler mListener;
 
-
-
     public interface MovieGridAdapterOnClickHandler {
         void onItemClick(int position);
     }
@@ -61,7 +59,6 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
                 mListener.onItemClick(position);
         }
     }
-
 
     @Override
     public MovieGridAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {

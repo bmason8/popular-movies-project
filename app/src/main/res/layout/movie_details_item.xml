@@ -31,8 +31,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:adjustViewBounds="true"
-            android:contentDescription="@string/movie_poster" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.04"
+            android:contentDescription="@string/movie_poster"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.02"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/movie_backdrop_image"/>
 
@@ -59,7 +60,9 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="12dp"
             android:scrollHorizontally="false"
-            android:textSize="22sp"
+            android:textSize="24sp"
+            android:textStyle="italic"
+            app:fontFamily="@font/roboto"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.2"
             app:layout_constraintStart_toEndOf="@+id/movie_poster_image"
@@ -91,78 +94,124 @@
             app:layout_constraintStart_toEndOf="@+id/movie_poster_image"
             app:layout_constraintTop_toBottomOf="@+id/movie_user_rating"/>
 
-        <TextView
-            android:id="@+id/summaryTv"
-            style="@style/MovieDetailHeaders"
-            android:text="@string/summary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/movie_poster_image"/>
-
-        <TextView
-            android:id="@+id/movie_overview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:paddingEnd="16dp"
-            android:paddingStart="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@+id/summaryTv"/>
-
-        <TextView
-            android:id="@+id/movie_trailer_tv"
-            style="@style/MovieDetailHeaders"
-            android:text="@string/trailers"
-            app:layout_constraintEnd_toStartOf="@+id/movie_release_date"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/movie_overview"/>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_movie_trailers"
+        <android.support.v7.widget.CardView
+            android:id="@+id/summary_cardview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/movie_trailer_tv"/>
-
-        <TextView
-            android:id="@+id/reviewHeaderTv"
-            style="@style/MovieDetailHeaders"
-            android:text="@string/review"
-            app:layout_constraintBottom_toTopOf="@+id/rv_movie_reviews"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rv_movie_trailers"/>
-
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_movie_reviews"
-            android:layout_width="match_parent"
-            android:layout_height="280dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/reviewHeaderTv"/>
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="42dp"
-            app:layout_constraintBottom_toBottomOf="@+id/rv_movie_trailers"
-            app:layout_constraintEnd_toEndOf="@+id/rv_movie_trailers"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/rv_movie_trailers"
-            app:layout_constraintTop_toTopOf="@+id/rv_movie_trailers"
-            app:srcCompat="@android:drawable/ic_media_play"/>
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/movie_poster_image">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/summaryTv"
+                    style="@style/MovieDetailHeaders"
+                    android:text="@string/summary"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/summary_cardview"/>
+
+                <TextView
+                    android:id="@+id/movie_overview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingBottom="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/summaryTv"/>
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/trailers_cardview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/summary_cardview">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/movie_trailer_tv"
+                    style="@style/MovieDetailHeaders"
+                    android:text="@string/trailers"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_movie_trailers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/movie_trailer_tv"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/movie_trailer_tv"/>
+
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/reviews_cardview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/trailers_cardview">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/reviewHeaderTv"
+                    style="@style/MovieDetailHeaders"
+                    android:text="@string/review"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/reviews_cardview"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rv_movie_reviews"
+                    android:layout_width="match_parent"
+                    android:layout_height="340dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/reviewHeaderTv"/>
+
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
 
     </android.support.constraint.ConstraintLayout>
 </ScrollView>

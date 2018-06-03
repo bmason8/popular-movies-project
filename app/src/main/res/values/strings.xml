@@ -5,10 +5,18 @@
     <string name="summary">Summary:</string>
     <string name="top_rated">Top Rated</string>
     <string name="most_popular">Most Popular</string>
-    <string name="released">Released:</string>
+    <!--https://stackoverflow.com/questions/1587056/how-to-keep-the-spaces-at-the-end-and-or-at-the-beginning-of-a-string?rq=1-->
+    <string name="released">Released:&#160;</string>
     <string name="review">Reviews:</string>
     <string name="trailers">Trailers:</string>
     <string name="movie_trailer_image">Movie trailer image</string>
     <string name="favourite_button_description">Favourite button</string>
     <string name="settings_favourites">Favourites</string>
+    <string name="movie_trailer_response">movieTrailerResponse</string>
+    <string name="no_trailers_available">No movie trailers available</string>
+    <string name="movie_review_response">movieReviewResponse</string>
+    <string name="no_reviews_available">No movie reviews available</string>
+    <string name="added_movie_to_favourites">Movie added to favourites!</string>
+    <string name="removed_movie_from_favourites">Movie removed from favourites</string>
+    <string name="failed_to_fetch_movies">Failed to fetch Movies</string>
 </resources>

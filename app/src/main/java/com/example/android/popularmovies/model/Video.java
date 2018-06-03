@@ -9,8 +9,6 @@ public class Video {
     @SerializedName("key")
     private String key;
 
-    private String site;
-
     private String name;
 
     private String type;
@@ -21,10 +19,6 @@ public class Video {
 
     public String getKey() {
         return key;
-    }
-
-    public String getSite() {
-        return site;
     }
 
     public String getName() {

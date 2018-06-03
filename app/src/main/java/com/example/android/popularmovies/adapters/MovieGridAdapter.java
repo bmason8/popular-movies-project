@@ -31,7 +31,6 @@ public class MovieGridAdapter extends RecyclerView.Adapter<MovieGridAdapter.Movi
         void onItemClick(int position);
     }
 
-
     public void MovieGridAdapterClickListener(MovieGridAdapterOnClickHandler clickHandler) {
         mListener = clickHandler;
     }

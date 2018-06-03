@@ -76,6 +76,8 @@ public class MovieDetailActivity extends AppCompatActivity {
     private List<Review> mReviewList = new ArrayList<>();
     int movie_id;
     int isFavourite = 0;
+    String releaseDateContatenatedString;
+    String releaseDate;
 
     // RecyclerView
     private RecyclerView mRecyclerView;
@@ -95,7 +97,6 @@ public class MovieDetailActivity extends AppCompatActivity {
             isFavourite = 0;
             deleteMovieFromDatabase(movie_id);
         }
-
         toggleFavouriteButton();
     }
 
@@ -119,7 +120,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         moviePosterImageUrl = intent.getStringExtra("posterImage");
         moviePosterImageUri = NetworkUtils.getTmdbPosterImage(moviePosterImageUrl);
 
-
         Picasso.with(this)
                 .load(backdropImageUri)
                 .placeholder(R.drawable.no_image_error)
@@ -142,8 +142,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         float rating = Float.parseFloat(sMovieUserRating);
         rating = (rating / 2);
         mUserRating.setRating(rating);
-        tvMovieReleaseDate.setText(getString(R.string.released) + intent.getStringExtra("releaseDate"));
-
+        releaseDate = intent.getStringExtra("releaseDate");
+        releaseDateContatenatedString = getString(R.string.released) + releaseDate;
+        tvMovieReleaseDate.setText(releaseDateContatenatedString);
 
         // build Movie object for inserting into database
         currentMovie.setId(movie_id);
@@ -157,7 +158,6 @@ public class MovieDetailActivity extends AppCompatActivity {
         checkIfFavourite();
         toggleFavouriteButton();
     }
-
 
     private void loadMovieTrailers(){
         Retrofit retrofit = new Retrofit.Builder()
@@ -173,13 +173,11 @@ public class MovieDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<VideoListResponse> call, @NonNull Response<VideoListResponse> response) {
                 VideoListResponse result = response.body();
-                // TODO insert a check for null and handle if response is null
                 if (result != null) {
                     List<Video> videoList = result.getVideoList();
                     mVideoListAdapter.setData(videoList);
                 } else {
-                    // TODO show something instead
-                    Log.d("movieTrailerResponse", "No movie trailers available");
+                    Log.d(getString(R.string.movie_trailer_response), getString(R.string.no_trailers_available));
                 }
             }
 
@@ -205,9 +203,12 @@ public class MovieDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call<ReviewListResponse> call, @NonNull Response<ReviewListResponse> response) {
                 ReviewListResponse result = response.body();
-                // TODO insert a check for null and handle if response is null
+                if (result != null) {
                 List<Review> reviewList = result.getmReviewList();
                 mReviewListAdapter.setmReviewList(reviewList);
+                } else {
+                    Log.d(getString(R.string.movie_review_response), getString(R.string.no_reviews_available));
+                }
             }
 
             @Override
@@ -234,6 +235,8 @@ public class MovieDetailActivity extends AppCompatActivity {
     private void initiateVideoListRecyclerView(){
 
         mRecyclerView = findViewById(R.id.rv_movie_trailers);
+        DividerItemDecoration itemDecor = new DividerItemDecoration(getBaseContext(), DividerItemDecoration.HORIZONTAL);
+        mRecyclerView.addItemDecoration(itemDecor);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mVideoListAdapter = new VideoListAdapter(getBaseContext(), mVideoList);
         mRecyclerView.setAdapter(mVideoListAdapter);
@@ -257,7 +260,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         Uri uri = getContentResolver().insert(MovieContract.MovieDbEntry.CONTENT_URI, contentValues);
 
         if (uri != null) {
-            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Movie added to favourites!", Snackbar.LENGTH_LONG);
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.added_movie_to_favourites, Snackbar.LENGTH_LONG);
             snackbar.show();
         }
         db.close();
@@ -269,7 +272,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         db.delete(MovieDbEntry.TABLE_NAME, MovieDbEntry.COLUMN_ID_TMDB + '=' + id, null);
 
-        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Movie removed from favourites", Snackbar.LENGTH_LONG);
+        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.removed_movie_from_favourites, Snackbar.LENGTH_LONG);
         snackbar.show();
 
         db.close();
@@ -283,7 +286,9 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
     }
 
-
+    // This function queries the database and then looks at the ID column for a match to the current movie
+    // When it finds a match it updates the isFavourite int so that if the user presses the favourite (star)
+    // button again, it knows to run the delete function.
     private void checkIfFavourite() {
         int currentMovieId;
         if (currentMovie == null) {
@@ -324,44 +329,4 @@ public class MovieDetailActivity extends AppCompatActivity {
         cursor.close();
         db.close();
     }
-
-
-
-
-//    public void toggleMovieFavourite() {
-//
-//        int movieExists;
-//
-//
-////        https://android.jlelse.eu/room-store-your-data-c6d49b4d53a3
-////        int movieExists;
-////        movieDatabase = Room.databaseBuilder(getApplicationContext(), MovieDatabase.class, "movieDatabase").build();
-////        movieExists = movieDatabase.movieDao().getSingleMovie(currentMovie.getId());
-////        if (movieExists > 0) {
-////            currentMovie.setFavourite(false);
-////            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
-////            movieDatabase.movieDao().deleteSingleMovie(currentMovie);
-////            Log.d("isFavouriteShdBeOff: ", String.valueOf(isFavourite));
-////        } else {
-////            currentMovie.setFavourite(true);
-////            mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
-////            movieDatabase.movieDao().insertSingleMovie(currentMovie);
-////            Log.d("isFavouriteShdBeOn: ", String.valueOf(isFavourite));
-////        }
-////    }
-//
-////    private class DatabaseAsync extends AsyncTask<Void, Void, Void> {
-////
-////        @Override
-////        protected Void doInBackground(Void... voids) {
-////
-////            toggleMovieFavourite();
-////            return null;
-////        }
-////
-////        @Override
-////        protected void onPostExecute(Void aVoid) {
-////        }
-////    }
-
 }

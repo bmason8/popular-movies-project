@@ -41,7 +41,7 @@ public class NetworkUtils {
     public static Uri getYouTubeThumbnailImage(String videoId) {
         Uri thumbnailUri = Uri.parse(BASE_YOUTUBE_THUMBNAIL_URL).buildUpon()
                 .appendEncodedPath(videoId)
-                .appendEncodedPath("mqdefault.jpg")
+                .appendEncodedPath("hqdefault.jpg")
                 .build();
         return thumbnailUri;
     }
@@ -54,7 +54,6 @@ public class NetworkUtils {
 
         return buildYoutubeUrl(videoUri);
     }
-
 
     public static Uri getTmdbBackdropImage(String backdropImagePath) {
         Uri backdropUri = Uri.parse(TMDB_BACKDROP_IMAGE_PATH).buildUpon()
@@ -69,35 +68,4 @@ public class NetworkUtils {
                 .build();
         return posterUri;
     }
-
-//    public class CheckFavouritesStatus extends AsyncTask<Integer, Void, Void> {
-//
-//        private Context mContext;
-//        public CheckFavouritesStatus(Context context) {
-//            mContext = context;
-//        }
-//
-//        @Override
-//        protected Void doInBackground(Integer... movieIdInt) {
-//
-//            int movieId = movieIdInt[0];
-//            int movieExists;
-//
-//            MovieDatabase movieDatabase;
-//            movieDatabase = Room.databaseBuilder(mContext, MovieDatabase.class, "movieDatabase").build();
-//            movieExists = movieDatabase.movieDao().getSingleMovie(movieId);
-//            if (movieExists > 0) {
-//                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_off);
-//            } else {
-//                mFavourite_btn.setImageResource(android.R.drawable.btn_star_big_on);
-//            }
-//
-//            return null;
-//        }
-//
-//            protected void onPostExecute (Void aVoid){
-//                Toast.makeText(mContext, "Worked", Toast.LENGTH_LONG).show();
-//            }
-//        }
-
 }

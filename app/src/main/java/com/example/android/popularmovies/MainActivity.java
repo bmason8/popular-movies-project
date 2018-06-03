@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
                         getParameter = MOST_POPULAR;
                         fetchMovieList(getParameter);
                         return true;
+
                     case R.id.settings_favourites:
                         getParameter = FAVOURITES;
                         fetchMovieList(getParameter);
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
             ApiInterface apiInterface = retrofit.create(ApiInterface.class);
 
             Call<MovieResult> call = apiInterface.getMovieResults(getParameter, API_KEY);
-            Log.d("call ", call.toString());
+            Log.d("call", call.toString());
 
             call.enqueue(new Callback<MovieResult>() {
                 @Override
@@ -132,15 +133,15 @@ public class MainActivity extends AppCompatActivity implements MovieGridAdapterO
                         mAdapter.setmMovieList(result.getResults());
                         mMovieList = result.getResults();
                     } else {
-                        Log.d("failed", "nothing");
-                        Toast.makeText(MainActivity.this, "Failed to fetch Movies", Toast.LENGTH_LONG).show();
+                        Log.d("failed", "failed to retrieve movie list");
+                        Toast.makeText(MainActivity.this, R.string.failed_to_fetch_movies, Toast.LENGTH_LONG).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<Movie.MovieResult> call, Throwable t) {
                     Toast.makeText(MainActivity.this, t.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.d("Fail: ", t.getMessage());
+                    Log.d("fail: ", t.getMessage());
                 }
             });
         }

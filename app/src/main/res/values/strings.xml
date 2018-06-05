@@ -19,4 +19,5 @@
     <string name="added_movie_to_favourites">Movie added to favourites!</string>
     <string name="removed_movie_from_favourites">Movie removed from favourites</string>
     <string name="failed_to_fetch_movies">Failed to fetch Movies</string>
+    <string name="could_not_remove_from_db">Could not remove from favourites</string>
 </resources>

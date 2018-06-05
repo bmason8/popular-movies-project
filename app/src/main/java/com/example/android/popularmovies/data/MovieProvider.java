@@ -39,7 +39,7 @@ public class MovieProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor cursor;
 
         switch (sUriMatcher.match(uri)) {
@@ -92,8 +92,29 @@ public class MovieProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+    public int delete(@NonNull Uri uri, String selection, @Nullable String[] selectionArgs) {
+        final SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
+        final int match = sUriMatcher.match(uri);
+        int rowsDeleted = 0;
+
+//        if (null == selection) selection = "1";
+        switch (match) {
+            case CODE_MOVIE:
+
+                    rowsDeleted = db.delete(MovieDbEntry.TABLE_NAME, MovieDbEntry.COLUMN_ID_TMDB + '=' + selection, null);
+
+//                selection = MovieDbEntry.COLUMN_ID_TMDB + "=?";
+//                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+//                // Delete single movie from database
+//                rowsDeleted = db.delete(MovieDbEntry.COLUMN_ID_TMDB, selection, selectionArgs);
+                break;
+                default:
+                    throw new UnsupportedOperationException("Unknown uri : " + uri);
+        }
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsDeleted;
     }
 
     @Override

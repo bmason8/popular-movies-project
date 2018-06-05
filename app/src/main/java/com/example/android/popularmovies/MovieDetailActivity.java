@@ -3,7 +3,6 @@ package com.example.android.popularmovies;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,7 +22,6 @@ import com.example.android.popularmovies.adapters.ReviewListAdapter;
 import com.example.android.popularmovies.adapters.VideoListAdapter;
 import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.data.MovieContract.MovieDbEntry;
-import com.example.android.popularmovies.data.MovieDbHelper;
 import com.example.android.popularmovies.model.Movie;
 import com.example.android.popularmovies.model.Review;
 import com.example.android.popularmovies.model.ReviewListResponse;
@@ -95,7 +93,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             insertMovieToDatabase();
         } else {
             isFavourite = 0;
-            deleteMovieFromDatabase(movie_id);
+            deleteMovieFromDatabase();
         }
         toggleFavouriteButton();
     }
@@ -245,9 +243,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
     private void insertMovieToDatabase() {
 
-        MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
-        SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
-
         ContentValues contentValues = new ContentValues();
         contentValues.put(MovieContract.MovieDbEntry.COLUMN_ID_TMDB, currentMovie.getId());
         contentValues.put(MovieContract.MovieDbEntry.COLUMN_TITLE, currentMovie.getTitle());
@@ -263,19 +258,21 @@ public class MovieDetailActivity extends AppCompatActivity {
             Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.added_movie_to_favourites, Snackbar.LENGTH_LONG);
             snackbar.show();
         }
-        db.close();
     }
 
-    private void deleteMovieFromDatabase(int id) {
-        MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
-        SQLiteDatabase db = mMovieDbHelper.getWritableDatabase();
+    private void deleteMovieFromDatabase() {
 
-        db.delete(MovieDbEntry.TABLE_NAME, MovieDbEntry.COLUMN_ID_TMDB + '=' + id, null);
+        String movieIdString = String.valueOf(movie_id);
 
-        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.removed_movie_from_favourites, Snackbar.LENGTH_LONG);
-        snackbar.show();
+        int numberOfRowsDeleted = getContentResolver().delete(MovieDbEntry.CONTENT_URI, movieIdString, null);
 
-        db.close();
+        if (numberOfRowsDeleted > 0) {
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.removed_movie_from_favourites, Snackbar.LENGTH_LONG);
+            snackbar.show();
+        } else {
+            Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.could_not_remove_from_db, Snackbar.LENGTH_LONG);
+            snackbar.show();
+        }
     }
 
     private void toggleFavouriteButton() {
@@ -295,6 +292,7 @@ public class MovieDetailActivity extends AppCompatActivity {
             return;
         }
 
+        String sortOrder = MovieDbEntry._ID;
         String[] columns = {
                 MovieDbEntry.COLUMN_ID_TMDB,
                 MovieDbEntry.COLUMN_TITLE,
@@ -303,17 +301,11 @@ public class MovieDetailActivity extends AppCompatActivity {
                 MovieDbEntry.COLUMN_VOTE_AVERAGE,
                 MovieDbEntry.COLUMN_BACKDROP_PATH,
                 MovieDbEntry.COLUMN_DATE,
-                MovieDbEntry.COLUMN_FAVORITE,
         };
 
-        String sortOrder = MovieDbEntry._ID;
-        MovieDbHelper mMovieDbHelper = new MovieDbHelper(this);
-        SQLiteDatabase db = mMovieDbHelper.getReadableDatabase();
-
-        Cursor cursor = db.query(MovieDbEntry.TABLE_NAME,
+        Cursor cursor = getContentResolver().query(
+                MovieDbEntry.CONTENT_URI,
                 columns,
-                null,
-                null,
                 null,
                 null,
                 sortOrder);
@@ -326,7 +318,5 @@ public class MovieDetailActivity extends AppCompatActivity {
                 }
             } while (cursor.moveToNext());
         }
-        cursor.close();
-        db.close();
     }
 }
